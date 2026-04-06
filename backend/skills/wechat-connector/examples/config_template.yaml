@@ -1,0 +1,240 @@
+# 微信自动回复机器人配置文件模板
+# 保存为 config.yaml 并修改相应配置
+
+wechat:
+  # 登录配置
+  login:
+    auto_login: true
+    hot_reload: true  # 热重载，避免每次扫码
+    enable_cmd_qr: false  # 在终端显示二维码（服务器环境设为true）
+    status_storage: "itchat.pkl"
+    
+  # 特定联系人配置
+  specific_contacts:
+    # 联系人1：老板
+    - id: "@boss123"  # 微信ID，运行一次程序后可以在日志中查看
+      name: "老板"
+      priority: 10  # 优先级，数字越大优先级越高
+      reply_rules:
+        - keywords: ["收到", "好的", "明白"]
+          reply: "收到指示！"
+          delay: 0  # 立即回复
+          
+        - keywords: ["报告", "报表", "总结"]
+          reply: "正在准备报告，稍后发送给您。"
+          delay: 2  # 2秒后回复
+          
+        - keywords: ["紧急", "马上", "立刻"]
+          reply: "紧急任务已收到，立即处理！"
+          delay: 0
+          forward_to: ["admin@company.com"]  # 转发到邮箱
+          
+        - condition: "always"  # 总是回复（谨慎使用）
+          reply: "消息已收到，正在处理。"
+          delay: 1
+    
+    # 联系人2：重要客户
+    - id: "@client456"
+      name: "重要客户-张总"
+      priority: 8
+      reply_rules:
+        - keywords: ["报价", "价格", "费用"]
+          reply: |
+            张总您好！
+            根据您的要求，报价如下：
+            1. 基础方案：¥10,000
+            2. 标准方案：¥25,000  
+            3. 高级方案：¥50,000
+            详细方案已发送到您的邮箱。
+          delay: 3
+          
+        - keywords: ["合同", "协议"]
+          reply: "合同正在准备中，法务审核后发送给您确认。"
+          delay: 2
+          
+        - keywords: ["会议", "见面", "拜访"]
+          reply: "已记录您的会议请求，稍后与您确认具体时间。"
+          delay: 1
+    
+    # 联系人3：团队成员
+    - id: "@team789"
+      name: "开发团队"
+      priority: 5
+      reply_rules:
+        - keywords: ["完成", "做好了", "搞定"]
+          reply: "👍 辛苦了！"
+          delay: 1
+          
+        - keywords: ["问题", "错误", "bug"]
+          reply: "收到问题反馈，正在排查..."
+          delay: 1
+          notify: ["@team_leader"]  # 通知团队领导
+          
+        - keywords: ["上线", "发布", "部署"]
+          reply: "发布计划已记录，请按流程操作。"
+          delay: 2
+  
+  # 全局回复规则（对所有联系人有效）
+  global_rules:
+    - keywords: ["帮助", "help", "功能", "说明"]
+      reply: |
+        自动助手功能说明：
+        📋 查询类：价格、订单、状态
+        📅 预约类：会议、拜访、演示  
+        📄 文档类：合同、报告、方案
+        ⚠️ 紧急情况请直接电话联系
+      delay: 1
+      
+    - keywords: ["你好", "hello", "hi", "在吗"]
+      reply: "您好！我是自动回复助手，请直接说明您的问题。"
+      delay: 1
+      
+    - keywords: ["谢谢", "感谢", "thx"]
+      reply: "不客气！😊"
+      delay: 1
+      
+    - keywords: ["客服", "人工", "转人工"]
+      reply: "正在为您转接人工客服，请稍候..."
+      delay: 2
+      action: "transfer_to_human"  # 触发转人工动作
+    
+    # 时间相关回复
+    - time_based:
+        start: "22:00"
+        end: "08:00"
+        reply: "非工作时间消息已记录，明天上班后第一时间处理。"
+        delay: 1
+      
+    - time_based:
+        start: "12:00"
+        end: "13:30"
+        reply: "午休时间，您的消息已记录，下午上班后回复。"
+        delay: 1
+  
+  # 消息转发配置
+  forwarding:
+    enabled: true
+    targets:
+      - type: "email"
+        name: "管理员邮箱"
+        address: "admin@company.com"
+        triggers: ["紧急", "重要", "urgent", "important"]
+        format: "html"  # html 或 text
+        
+      - type: "webhook"
+        name: "团队通知"
+        url: "https://hooks.slack.com/services/xxx/yyy/zzz"
+        triggers: ["错误", "异常", "error", "exception"]
+        
+      - type: "sms"
+        name: "紧急短信"
+        phone: "13800138000"
+        triggers: ["严重", "critical", "宕机"]
+        min_priority: 9  # 只有优先级9以上的消息才转发
+  
+  # 消息处理配置
+  processing:
+    # 消息队列设置
+    queue_size: 100
+    worker_threads: 3
+    
+    # 频率限制（防止被微信限制）
+    rate_limit:
+      messages_per_minute: 30
+      messages_per_hour: 200
+      
+    # 重试机制
+    retry:
+      max_attempts: 3
+      delay_seconds: 5
+      
+    # 消息日志
+    logging:
+      enabled: true
+      level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+      file: "wechat_bot.log"
+      max_size_mb: 10
+      backup_count: 5
+  
+  # 智能回复配置（可选）
+  smart_reply:
+    enabled: false  # 设置为true启用AI智能回复
+    provider: "openai"  # openai, azure, baidu
+    api_key: "${OPENAI_API_KEY}"  # 使用环境变量
+    model: "gpt-3.5-turbo"
+    max_tokens: 100
+    temperature: 0.7
+    
+    # 上下文设置
+    context:
+      max_history: 10  # 保留最近10条对话历史
+      system_prompt: "你是一个专业的微信助手，回复要简洁、友好、专业。"
+  
+  # 安全配置
+  security:
+    # 黑白名单
+    blacklist: []  # 不回复的联系人
+    whitelist: []  # 只回复白名单内的联系人（为空则允许所有）
+    
+    # 敏感词过滤
+    filter_sensitive_words: true
+    sensitive_words: ["密码", "账号", "银行卡", "身份证"]
+    replacement: "***"
+    
+    # 消息加密（可选）
+    encrypt_messages: false
+    encryption_key: "${ENCRYPTION_KEY}"
+
+# 业务逻辑配置
+business:
+  # 订单相关
+  orders:
+    database: "orders.db"
+    query_url: "https://api.company.com/orders"
+    
+  # 产品价格
+  products:
+    - name: "基础版"
+      price: 10000
+      features: ["功能A", "功能B"]
+      
+    - name: "专业版"
+      price: 25000
+      features: ["功能A", "功能B", "功能C"]
+      
+    - name: "企业版"
+      price: 50000
+      features: ["所有功能", "专属支持"]
+  
+  # 工作时间
+  working_hours:
+    weekdays: ["周一", "周二", "周三", "周四", "周五"]
+    start_time: "09:00"
+    end_time: "18:00"
+    holidays: ["2024-01-01", "2024-02-10"]  # 节假日
+
+# 系统配置
+system:
+  # 监控配置
+  monitoring:
+    enabled: true
+    health_check_interval: 60  # 秒
+    alert_email: "monitor@company.com"
+    
+  # 备份配置
+  backup:
+    enabled: true
+    interval_hours: 24
+    keep_days: 30
+    location: "./backups"
+    
+  # 更新检查
+  update_check: true
+  check_interval_days: 7
+
+# 使用说明：
+# 1. 复制此文件为 config.yaml
+# 2. 修改 specific_contacts 中的微信ID（运行一次程序后查看日志获取）
+# 3. 根据需求调整回复规则
+# 4. 配置转发目标（邮箱、webhook等）
+# 5. 启动机器人：python wechat_bot.py --config config.yaml

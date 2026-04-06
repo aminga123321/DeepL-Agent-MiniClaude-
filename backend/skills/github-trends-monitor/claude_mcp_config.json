@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "github-trends-monitor": {
+      "command": "python",
+      "args": [
+        "D:/agent/DeepL_Agent/backend/skills/github-trends-monitor/github_trends_mcp.py"
+      ],
+      "env": {
+        "GITHUB_TOKEN": "your_token_here",
+        "CACHE_DURATION": "300",
+        "TRENDING_CACHE_DURATION": "3600",
+        "LOG_LEVEL": "INFO"
+      }
+    }
+  }
+}

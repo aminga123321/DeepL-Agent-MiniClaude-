@@ -1,0 +1,23 @@
+<template>
+  <div>
+    <h1> ChatWindow</h1>
+    <ChatWindow />
+  </div>
+</template>
+
+<script setup>
+import ChatWindow from './components/ChatWindow.vue'
+</script>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  background: #f5f5f5;
+}
+</style>
