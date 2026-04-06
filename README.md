@@ -11,36 +11,35 @@
 - 🌍 **跨平台**：Windows（WSL）、Linux、macOS
 
 ## 项目结构
+
+```
 DeepL-Agent/
 ├── backend/
-│ ├── app/
-│ │ ├── agent/ # Agent 核心逻辑
-│ │ │ ├── streaming_agent.py
-│ │ │ ├── event_handler.py
-│ │ │ ├── message_builder.py
-│ │ │ ├── context.py
-│ │ │ ├── models.py
-│ │ │ └── agent_factory.py
-│ │ ├── tools/ # 工具系统
-│ │ │ ├── base.py
-│ │ │ ├── bash.py
-│ │ │ ├── read_file.py
-│ │ │ ├── write_file.py
-│ │ │ └── load_skill.py
-│ │ ├── main.py # WebSocket 服务入口
-│ │ └── skill_loader.py # 技能加载器
-│ ├── skills/ # 技能文件（SKILL.md）
-│ └── requirements.txt # Python 依赖
+│   ├── app/
+│   │   ├── agent/                 # Agent 核心逻辑
+│   │   │   ├── streaming_agent.py
+│   │   │   ├── event_handler.py
+│   │   │   ├── message_builder.py
+│   │   │   ├── context.py
+│   │   │   └── models.py
+│   │   ├── tools/                 # 工具系统
+│   │   │   ├── base.py
+│   │   │   ├── bash.py
+│   │   │   ├── read_file.py
+│   │   │   ├── write_file.py
+│   │   │   └── load_skill.py
+│   │   ├── main.py                # WebSocket 服务入口
+│   │   └── skill_loader.py        # 技能加载器
+│   ├── skills/                    # 技能文件（SKILL.md）
+│   └── requirements.txt           # Python 依赖
 ├── frontend/
-│ ├── src/
-│ │ ├── components/
-│ │ │ └── ChatWindow.vue
-│ │ └── ...
-│ ├── package.json
-│ └── vite.config.js
+│   ├── src/
+│   │   └── components/
+│   │       └── ChatWindow.vue
+│   ├── package.json
+│   └── vite.config.js
 └── README.md
-
-text
+```
 
 ## 技术栈
 
