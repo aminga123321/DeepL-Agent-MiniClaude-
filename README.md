@@ -11,21 +11,36 @@
 - 🌍 **跨平台**：Windows（WSL）、Linux、macOS
 
 ## 项目结构
-
-text
 DeepL-Agent/
 ├── backend/
-│   ├── app/
-│   │   ├── agent/      # Agent 核心逻辑
-│   │   ├── tools/      # 工具系统
-│   │   └── main.py     # WebSocket 服务
-│   ├── skills/         # 技能文件
-│   └── requirements.txt
+│ ├── app/
+│ │ ├── agent/ # Agent 核心逻辑
+│ │ │ ├── streaming_agent.py
+│ │ │ ├── event_handler.py
+│ │ │ ├── message_builder.py
+│ │ │ ├── context.py
+│ │ │ ├── models.py
+│ │ │ └── agent_factory.py
+│ │ ├── tools/ # 工具系统
+│ │ │ ├── base.py
+│ │ │ ├── bash.py
+│ │ │ ├── read_file.py
+│ │ │ ├── write_file.py
+│ │ │ └── load_skill.py
+│ │ ├── main.py # WebSocket 服务入口
+│ │ └── skill_loader.py # 技能加载器
+│ ├── skills/ # 技能文件（SKILL.md）
+│ └── requirements.txt # Python 依赖
 ├── frontend/
-│   ├── src/
-│   │   └── ChatWindow.vue
-│   └── package.json
+│ ├── src/
+│ │ ├── components/
+│ │ │ └── ChatWindow.vue
+│ │ └── ...
+│ ├── package.json
+│ └── vite.config.js
 └── README.md
+
+text
 
 ## 技术栈
 
@@ -47,8 +62,8 @@ DeepL-Agent/
 
 ```bash
 # 克隆仓库
-git clone https://github.com/你的用户名/你的仓库名.git
-cd 你的仓库名
+git clone https://github.com/aminga123321/DeepL-Agent-MiniClaude-.git
+cd DeepL-Agent-MiniClaude-
 
 # 后端
 cd backend
@@ -58,7 +73,7 @@ venv\Scripts\activate  # Windows
 pip install -r requirements.txt
 cp .env.example .env
 # 编辑 .env 填入你的 API Key
-python main.py
+python app/main.py
 
 # 前端（新终端）
 cd frontend
