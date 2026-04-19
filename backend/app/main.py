@@ -10,9 +10,9 @@ from pathlib import Path
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
-sys.path.append(str(Path(__file__).parent))
+sys.path.append(str(Path(__file__).parent.parent))
 
-from agent.agent_factory import AgentFactory
+from app.agent.agent_factory import AgentFactory
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

@@ -3,11 +3,11 @@ Agent 模块
 """
 import sys
 print(sys.path)
-from agent.models import ToolCall, LLMResponse, ToolResult
-from agent.context import Context
-from agent.message_builder import MessageBuilder
-from agent.event_handler import EventHandler
-from agent.streaming_agent import StreamingAgent
+from .models import ToolCall, LLMResponse, ToolResult
+from .context import Context
+from .message_builder import MessageBuilder
+from .event_handler import EventHandler
+from .streaming_agent import StreamingAgent
 
 __all__ = [
     "ToolCall",

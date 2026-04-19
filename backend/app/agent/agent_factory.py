@@ -6,9 +6,11 @@ import sys
 import os
 from pathlib import Path
 
-from agent.streaming_agent import StreamingAgent
-from tools.__init__ import registry, register_builtin_tools
-from skill_loader import SkillLoader
+from .streaming_agent import StreamingAgent
+
+sys.path.append(str(Path(__file__).parent.parent))
+from app.tools import registry, register_builtin_tools
+from app.skill_loader import SkillLoader
 
 
 class AgentFactory:
