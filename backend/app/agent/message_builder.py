@@ -3,20 +3,24 @@
 """
 
 from typing import List, Dict, Any
-from agent.models import ToolCall
+from .models import ToolCall
 
 
 class MessageBuilder:
     """构建 Anthropic API 格式的消息"""
     
     @staticmethod
-    def build_system_prompt(workdir: str, skills_description: str, tools_description: str = "") -> str:
+    def build_system_prompt(workdir: str, skills_description: str, tools_description: str = "", memory_context: str = "") -> str:
         """构建系统提示"""
         tools_section = ""
         if tools_description:
             tools_section = f"\n\n## Available Tools\n\n{tools_description}"
         
-        return f"""You are a coding agent at {workdir}.
+        memory_section = ""
+        if memory_context:
+            memory_section = f"\n\n## Relevant Memory from Previous Conversations\n\n{memory_context}\n"
+        
+        return f"""You are a coding agent at {workdir}.{memory_section}
 You have access to tools that can execute commands, read/write files, and load specialized skills.{tools_section}
 
 Skills available (use load_skill to get full instructions):

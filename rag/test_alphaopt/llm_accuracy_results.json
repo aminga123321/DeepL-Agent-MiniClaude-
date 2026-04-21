@@ -1,0 +1,647 @@
+{
+  "results": [
+    {
+      "query_id": "Q1",
+      "query": "AlphaOPT 是什么？",
+      "llm_answer": "根据文档内容，**AlphaOPT** 是一个用于自动化优化建模的自我改进框架，其核心是一个**基于经验库学习的大型语言模型（LLM）系统**。以下是基于文档的详细说明：\n\n### 1. **核心定义与目标**\nAlphaOPT 旨在解决将非正式、模糊的自然语言问题描述，自动、准确地映射为精确的数学优化模型和可执行求解器代码的挑战。它克服了现有方法（如依赖脆弱提示模板或需要大量标注数据微调）的局限性，专注于**从有限演示中学习并持续自我改进**。\n\n### 2. **关键创新：经验库学习**\nAlphaOPT 的核心是一个**结构化、可自我演化的经验库**，其中存储着经过求解器验证的建模“洞察”。每个洞察以四元组形式组织：\n- **分类**：洞察所属的优化问题类别。\n- **条件**：该洞察适用的具体问题情境。\n- **解释**：洞察的原理与理由。\n- **示例**：具体应用示例。\n这种设计使知识**显式化、可解释、可复用**，便于人类检查与干预。\n\n### 3. **工作原理：两阶段持续循环**\nAlphaOPT 通过以下两个阶段的循环实现自我改进：\n- **库学习阶段**：从失败尝试中反思，提取求解器验证过的结构化洞察（即使只有答案标签而无标准程序），并加入库中。\n- **库演化阶段**：诊断任务与洞察检索之间的错配，根据聚合证据细化洞察的适用条件，避免洞察过于狭隘或泛化，提升跨任务迁移能力。\n\n### 4. **主要优势**\n- **高效学习**：仅需有限演示（甚至仅答案而无标准程序或推理链）即可学习，无需标注完整的推理过程或更新模型参数。\n- **持续改进**：通过更新经验库而非重新训练模型权重来扩展知识，成本低且可持续。\n- **强泛化能力**：在分布外数据集上表现优异，优于基于提示或微调的方法。例如，在 OptiBench 分布外数据集上准确率达 91.8%，仅用答案训练时甚至达到 92.1%。\n- **显式知识表示**：库内容可被人类理解和干预，提高了系统的可靠性和可信任度。\n\n### 5. **性能表现**\n- 在训练数据量增加时性能持续提升（如从 100 项增至 300 项训练数据时，准确率从 65% 升至 72%）。\n- 在多个基准测试中达到最先进的分布外泛化性能，尤其在 LogiOR 和 OptiBench 数据集上显著优于基线方法。\n\n### 6. **与现有方法的区别**\n- **不同于提示工程**：不依赖固定模板，能通过经验库自适应改进。\n- **不同于微调方法**：无需昂贵的数据标注和全模型重训练，且能学习到可迁移的建模原则而非记忆数据集特定模式。\n\n总之，**AlphaOPT 是一个通过构建和演化显式经验库来实现持续自我改进的优化建模框架，能够高效地从有限监督中学习，并在分布外场景中表现出强大的泛化能力和可解释性。**\n\n> 依据文档章节：摘要、1 引言、3 方法论、4.3 有限监督学习、4.5 整体性能。",
+      "llm_accuracy": 1.0,
+      "retrieved_docs": [
+        {
+          "content": "[ABSTRACT]\n\nOptimization modeling enables critical decisions across industries but remains hard to automate: informal language must be mapped to precise mathematical formulations and executable solver code, while prior LLM approaches either rely on brittle prompting or costly retraining with limited generalization. We present **AlphaOPT** , a self-improving _experience library_ that enables an LLM to learn from limited demonstrations (i.e, even answers alone without gold-standard program) and solver feedback without annotated reasoning traces or parameter updates. AlphaOPT operates a continual two-phase cycle: (i) a _Library Learning_ phase that reflects on failed attempts, extracts solver-verified, structured insights as _{taxonomy, condition, explanation, example}_ ; and (ii) a _Library Evolution_ phase that diagnoses retrieval misalignments and refines the applicability conditions of stored insights, improving transfer across tasks. This design (1) learns efficiently from limited demonstrations without curated rationales, (2) expands continually without costly retraining by updating the library rather than model weights, and (3) makes knowledge explicit and interpretable for human inspection and intervention. Experiments show that AlphaOPT steadily improves with more data (65% _→_ 72% from 100 to 300 training items) and surpasses the strongest baseline by 7.7% on the out-of-distribution OptiBench dataset when trained only on answers. AlphaOPT code and data are available at https://github.com/Minw913/AlphaOPT.",
+          "score": 0.64191186,
+          "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+          "breadcrumbs": [
+            "ABSTRACT"
+          ],
+          "metadata": {
+            "breadcrumbs": [
+              "ABSTRACT"
+            ],
+            "title": "",
+            "section": "ABSTRACT",
+            "subsection": "",
+            "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+            "page": null,
+            "chunk_type": "section",
+            "length": 1525,
+            "has_prefix": true
+          },
+          "recall_method": "fused",
+          "fusion_score": 0.01639344262295082,
+          "rerank_score": 0.9814370672602641
+        },
+        {
+          "content": "[1 INTRODUCTION]\n\nOptimization models support critical decision-making in finance, manufacturing, marketing, transportation, and logistics (AhmadiTeshnizi et al., 2023; Bertsimas & Tsitsiklis, 1997; Ramamonjison et al., 2022). Beyond improving efficiency, automating the optimization workflow lowers the barrier to operations research expertise in industry, enabling non-experts to prototype faster, iterate on formulations, and deploy solver-backed decisions at scale. Yet this process has long been challenging, as informal and often ambiguous specifications must be mapped to precise, domain-specific formulations and paired with appropriate code and solvers, creating major bottlenecks for end-to-end automation (Jiang et al., 2025).  \nAdvances in large language models (LLMs) make this vision increasingly feasible: they can parse natural language requirements (Ouyang et al., 2022), generate executable programs (Nijkamp et al.; Jimenez et al., 2024), and orchestrate downstream tools (Qin et al., 2024). Two main lines of work  \n> _∗_ Equal contribution.  \n> _†_ Correspondence: qua@mit.edu  \n1  \nPreprint  \nhave emerged. Prompt-based systems steer general LLMs with structured prompts and tool use (Xiao et al., 2023; Thind et al., 2025; AhmadiTeshnizi et al., 2024; Zhang & Luo, 2025). Finetuning approaches adapt models on domain corpora and benchmarks (Huang et al., 2025; Yang et al., 2024). Despite this progress, both families face limitations: prompt-based systems stop improving once they run out of fixed templates, and they are fragile to small wording changes and shifts in the domain; fine-tuned models require costly retraining and, critically, most benchmarks and datasets in the community (e.g., NLP4LP (AhmadiTeshnizi et al., 2024), MAMO (Huang et al., 2024), IndustryOR (Huang et al., 2025)) contain only programs/solutions rather than the intermediate reasoning that governs modeling choices, thereby limiting the generalizability of fine-tuning approaches. This motivates a new learning paradigm for optimization formulation: instead of relying solely on prompts or retraining, LLMs should continually improve by accumulating, refining, and reusing solver-verified modeling insights.  \n![](data/images/AlphaOPT_Formulating_Optimization_Programs_with_Self-Improving_LLM_Experience_Library.pdf-0002-02.png)  \nFigure 1: AlphaOPT identifies and retrieves relevant insights to guide problem solving. In this example, it avoids the common mistake of minimizing the sum of process times and instead introduces an auxiliary variable to correctly minimize the makespan, leading to the correct solution.  \nWe propose **AlphaOPT** , a self-improving framework that builds and refines a structured library of solver-verified insights for optimization formulation, as exemplified in Figure 1. Each insight encodes a reusable modeling rule in the form of a 4-tuple ( _taxonomy_ , _(applicability) condition_ , _explanation_ , _example_ ), which specifies not only what to reuse but also when and why it applies. We remark that our library learning framework does not require backpropagation to update framework parameters and can be regarded as the evolutionary mechanism. **AlphaOPT** improves through a continual two-phase cycle. Library Learning acquires new insights from both gold programs (when available) and solver-verified answer-only supervision, organizing them into a dynamically updating hierarchical taxonomy. Library Evolution then diagnoses misalignments between tasks and insight applicability, and refines conditions using aggregate evidence, ensuring that insights remain neither too narrow nor overly general. This design yields a principled optimization view: library construction corresponds to maximizing expected task success induced by task–insight matching while regularizing size to maintain efficiency and prevent redundancy.  \nWe conduct quantitative experiments across multiple benchmarks and baselines, as well as qualitative analyses of the learned library. The results show that, compared to prompt-based or fine-tuning approaches, **AlphaOPT** (1) learns efficiently from limited demonstrations (i.e., it can learn from answers without recalling formulation) without requiring annotated reasoning traces or even goldstandard programs, (2) achieves stronger out-of-distribution generalizability and more consistent continual growth than learning-based methods, and (3) makes knowledge explicit and interpretable for human inspection and involvement.  \nBeyond these advantages, **AlphaOPT** also achieves state-of-the-art performance on multiple benchmarks. These results demonstrate the efficacy and potential of self-improving experience-library  \n2  \nPreprint  \nlearning for optimization formulation, paving the way toward more challenging settings, such as efficient program formulation and large-scale optimization.  \nOur main contributions are threefold:  \n- **A library learning framework that learns from answers only.** We propose the first experience-library learning framework for natural language optimization formulation tasks, formally grounded in a mathematical view. The system can learn solely from answers, without requiring gold-standard programs.  \n- **A reusable and interpretable experience library.** We construct the first solver-verified library of structured modeling insights for LLM systems, designed to be reusable across tasks and explicitly interpretable for reliable transfer in operations research domains.  \n- **State-of-the-art out-of-distribution generalization.** AlphaOPT achieves strong generalization beyond training distributions, attaining state-of-the-art performance on LogiOR and OptiBench benchmarks.",
+          "score": 0.5889118,
+          "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+          "breadcrumbs": [
+            "1 INTRODUCTION"
+          ],
+          "metadata": {
+            "breadcrumbs": [
+              "1 INTRODUCTION"
+            ],
+            "title": "",
+            "section": "1 INTRODUCTION",
+            "subsection": "",
+            "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+            "page": null,
+            "chunk_type": "section",
+            "length": 5673,
+            "has_prefix": true
+          },
+          "recall_method": "fused",
+          "fusion_score": 0.014705882352941176,
+          "rerank_score": 0.9501787555010006
+        },
+        {
+          "content": "[3 METHODOLOGY]\n\nOptimization tasks arrive with diverse natural-language descriptions, yet they share recurring modeling rules that activate under identifiable conditions. We identify three major challenges in building reliable systems that leverage LLMs to formulate and solve optimization problems using existing technologies and resources. First, gold-standard programs are scarce and may contain annotation errors (Jiang et al., 2025; Yang et al., 2025a), while datasets with only answer labels remain underutilized (Huang et al., 2024; 2025; Lu et al., 2025). Second, fine-tuned models (Huang et al., 2025; Jiang et al., 2025) struggle to generalize because the crucial when-to-apply-what knowledge is weakly represented (or missing) in training data; they can mimic syntax without mastering applicability. Third, the performance of prompt-based agent systems AhmadiTeshnizi et al. (2023); Xiao et al. (2023); Yang et al. (2025a) stagnates as the number of exemplars increases: they rely on human empirical curation and lack the capacity to adapt or to continually learn from larger datasets.  \nWe propose AlphaOPT, an experience-library learning framework that learns from both gold programs (when available) and answer-only supervision. AlphaOPT iteratively builds a structured, solver-verified repository of reusable insights with explicit applicability conditions and evolves these conditions at the population level to improve generalization while avoiding redundancy. This twostage design is described in Section 3.1. In Section 3.2, we provide a mathematical interpretation that frames library construction as maximizing task success with a size regularizer. In Section A, we compare our method with prior works on learning from experience and self-evolving problemsolving agents.",
+          "score": 0.5997416,
+          "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+          "breadcrumbs": [
+            "3 METHODOLOGY"
+          ],
+          "metadata": {
+            "breadcrumbs": [
+              "3 METHODOLOGY"
+            ],
+            "title": "",
+            "section": "3 METHODOLOGY",
+            "subsection": "",
+            "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+            "page": null,
+            "chunk_type": "section",
+            "length": 1775,
+            "has_prefix": true
+          },
+          "recall_method": "fused",
+          "fusion_score": 0.014925373134328358,
+          "rerank_score": 0.9439460379462561
+        }
+      ]
+    },
+    {
+      "query_id": "Q2",
+      "query": "AlphaOPT 的核心功能是什么？",
+      "llm_answer": "根据文档内容，**AlphaOPT** 的核心功能是作为一个**自改进的经验库学习框架**，用于将自然语言描述自动、准确地转化为可执行的优化问题数学模型和求解代码。其核心功能具体体现在以下三个相互关联的方面：\n\n1.  **从有限监督中高效学习建模知识**：AlphaOPT 能够从非常有限的演示中学习，特别是能够**仅利用最终答案（而不需要黄金标准的完整程序或人工标注的推理过程）** 进行学习。它通过“自我探索”过程，分析求解器的反馈（成功或失败）来提取和验证建模规则，从而克服了优化领域标注数据稀缺的难题。\n\n2.  **构建并持续进化一个结构化、可解释的经验库**：系统会构建并维护一个由求解器验证的、结构化的“洞察”库。每个洞察都是一个四元组 `{分类， 适用条件， 解释， 示例}`，它明确地封装了“**在什么情况下、应用什么规则、以及为什么**”。这个库不是静态的，而是通过一个两阶段的持续循环进行自我进化：\n    *   **库学习阶段**：从失败的尝试中反思，提取并验证新的洞察。\n    *   **库进化阶段**：诊断任务与洞察检索之间的错配，并基于聚合证据**精炼洞察的适用条件**，确保知识既不过于狭隘也不过于宽泛，从而提升跨任务的迁移能力。\n\n3.  **实现强大的分布外泛化与持续改进**：通过上述机制，AlphaOPT 能够**持续提升性能**（例如，训练数据从100项增至300项时，准确率从65%提升至72%），并且在面对与训练数据分布不同的新问题时，展现出卓越的泛化能力。实验表明，其性能超越了基于提示工程和微调的方法，在仅使用答案训练的情况下，在 OptiBench 分布外数据集上达到了最先进的性能（92.1%准确率）。\n\n**总结来说**，AlphaOPT 的核心功能是**通过一个可进化、可解释的结构化经验库，使大语言模型能够从有限的、甚至是不完整的监督信号中，持续学习并可靠地应用优化建模知识，最终实现自动化、高泛化能力的优化问题求解程序生成。** 这一设计使其能够在不更新模型参数的情况下持续学习，并将学到的知识变得明确、可审查，支持人类专家的介入和干预。",
+      "llm_accuracy": 1.0,
+      "retrieved_docs": [
+        {
+          "content": "[ABSTRACT]\n\nOptimization modeling enables critical decisions across industries but remains hard to automate: informal language must be mapped to precise mathematical formulations and executable solver code, while prior LLM approaches either rely on brittle prompting or costly retraining with limited generalization. We present **AlphaOPT** , a self-improving _experience library_ that enables an LLM to learn from limited demonstrations (i.e, even answers alone without gold-standard program) and solver feedback without annotated reasoning traces or parameter updates. AlphaOPT operates a continual two-phase cycle: (i) a _Library Learning_ phase that reflects on failed attempts, extracts solver-verified, structured insights as _{taxonomy, condition, explanation, example}_ ; and (ii) a _Library Evolution_ phase that diagnoses retrieval misalignments and refines the applicability conditions of stored insights, improving transfer across tasks. This design (1) learns efficiently from limited demonstrations without curated rationales, (2) expands continually without costly retraining by updating the library rather than model weights, and (3) makes knowledge explicit and interpretable for human inspection and intervention. Experiments show that AlphaOPT steadily improves with more data (65% _→_ 72% from 100 to 300 training items) and surpasses the strongest baseline by 7.7% on the out-of-distribution OptiBench dataset when trained only on answers. AlphaOPT code and data are available at https://github.com/Minw913/AlphaOPT.",
+          "score": 0.65366846,
+          "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+          "breadcrumbs": [
+            "ABSTRACT"
+          ],
+          "metadata": {
+            "breadcrumbs": [
+              "ABSTRACT"
+            ],
+            "title": "",
+            "section": "ABSTRACT",
+            "subsection": "",
+            "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+            "page": null,
+            "chunk_type": "section",
+            "length": 1525,
+            "has_prefix": true
+          },
+          "recall_method": "fused",
+          "fusion_score": 0.01639344262295082,
+          "rerank_score": 0.9676745568697078
+        },
+        {
+          "content": "[1 INTRODUCTION]\n\nOptimization models support critical decision-making in finance, manufacturing, marketing, transportation, and logistics (AhmadiTeshnizi et al., 2023; Bertsimas & Tsitsiklis, 1997; Ramamonjison et al., 2022). Beyond improving efficiency, automating the optimization workflow lowers the barrier to operations research expertise in industry, enabling non-experts to prototype faster, iterate on formulations, and deploy solver-backed decisions at scale. Yet this process has long been challenging, as informal and often ambiguous specifications must be mapped to precise, domain-specific formulations and paired with appropriate code and solvers, creating major bottlenecks for end-to-end automation (Jiang et al., 2025).  \nAdvances in large language models (LLMs) make this vision increasingly feasible: they can parse natural language requirements (Ouyang et al., 2022), generate executable programs (Nijkamp et al.; Jimenez et al., 2024), and orchestrate downstream tools (Qin et al., 2024). Two main lines of work  \n> _∗_ Equal contribution.  \n> _†_ Correspondence: qua@mit.edu  \n1  \nPreprint  \nhave emerged. Prompt-based systems steer general LLMs with structured prompts and tool use (Xiao et al., 2023; Thind et al., 2025; AhmadiTeshnizi et al., 2024; Zhang & Luo, 2025). Finetuning approaches adapt models on domain corpora and benchmarks (Huang et al., 2025; Yang et al., 2024). Despite this progress, both families face limitations: prompt-based systems stop improving once they run out of fixed templates, and they are fragile to small wording changes and shifts in the domain; fine-tuned models require costly retraining and, critically, most benchmarks and datasets in the community (e.g., NLP4LP (AhmadiTeshnizi et al., 2024), MAMO (Huang et al., 2024), IndustryOR (Huang et al., 2025)) contain only programs/solutions rather than the intermediate reasoning that governs modeling choices, thereby limiting the generalizability of fine-tuning approaches. This motivates a new learning paradigm for optimization formulation: instead of relying solely on prompts or retraining, LLMs should continually improve by accumulating, refining, and reusing solver-verified modeling insights.  \n![](data/images/AlphaOPT_Formulating_Optimization_Programs_with_Self-Improving_LLM_Experience_Library.pdf-0002-02.png)  \nFigure 1: AlphaOPT identifies and retrieves relevant insights to guide problem solving. In this example, it avoids the common mistake of minimizing the sum of process times and instead introduces an auxiliary variable to correctly minimize the makespan, leading to the correct solution.  \nWe propose **AlphaOPT** , a self-improving framework that builds and refines a structured library of solver-verified insights for optimization formulation, as exemplified in Figure 1. Each insight encodes a reusable modeling rule in the form of a 4-tuple ( _taxonomy_ , _(applicability) condition_ , _explanation_ , _example_ ), which specifies not only what to reuse but also when and why it applies. We remark that our library learning framework does not require backpropagation to update framework parameters and can be regarded as the evolutionary mechanism. **AlphaOPT** improves through a continual two-phase cycle. Library Learning acquires new insights from both gold programs (when available) and solver-verified answer-only supervision, organizing them into a dynamically updating hierarchical taxonomy. Library Evolution then diagnoses misalignments between tasks and insight applicability, and refines conditions using aggregate evidence, ensuring that insights remain neither too narrow nor overly general. This design yields a principled optimization view: library construction corresponds to maximizing expected task success induced by task–insight matching while regularizing size to maintain efficiency and prevent redundancy.  \nWe conduct quantitative experiments across multiple benchmarks and baselines, as well as qualitative analyses of the learned library. The results show that, compared to prompt-based or fine-tuning approaches, **AlphaOPT** (1) learns efficiently from limited demonstrations (i.e., it can learn from answers without recalling formulation) without requiring annotated reasoning traces or even goldstandard programs, (2) achieves stronger out-of-distribution generalizability and more consistent continual growth than learning-based methods, and (3) makes knowledge explicit and interpretable for human inspection and involvement.  \nBeyond these advantages, **AlphaOPT** also achieves state-of-the-art performance on multiple benchmarks. These results demonstrate the efficacy and potential of self-improving experience-library  \n2  \nPreprint  \nlearning for optimization formulation, paving the way toward more challenging settings, such as efficient program formulation and large-scale optimization.  \nOur main contributions are threefold:  \n- **A library learning framework that learns from answers only.** We propose the first experience-library learning framework for natural language optimization formulation tasks, formally grounded in a mathematical view. The system can learn solely from answers, without requiring gold-standard programs.  \n- **A reusable and interpretable experience library.** We construct the first solver-verified library of structured modeling insights for LLM systems, designed to be reusable across tasks and explicitly interpretable for reliable transfer in operations research domains.  \n- **State-of-the-art out-of-distribution generalization.** AlphaOPT achieves strong generalization beyond training distributions, attaining state-of-the-art performance on LogiOR and OptiBench benchmarks.",
+          "score": 0.60868716,
+          "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+          "breadcrumbs": [
+            "1 INTRODUCTION"
+          ],
+          "metadata": {
+            "breadcrumbs": [
+              "1 INTRODUCTION"
+            ],
+            "title": "",
+            "section": "1 INTRODUCTION",
+            "subsection": "",
+            "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+            "page": null,
+            "chunk_type": "section",
+            "length": 5673,
+            "has_prefix": true
+          },
+          "recall_method": "fused",
+          "fusion_score": 0.014705882352941176,
+          "rerank_score": 0.9315914056954007
+        },
+        {
+          "content": "[4.3 LEARNING WITH LIMITED SUPERVISION]\n\nIn practical OR applications, gold-standard programs are rarely available. We therefore test whether AlphaOPT can learn solely from answers. Since two datasets in our training set contain goldstandard programs, we remove them in this experiment and let **AlphaOPT** learn exclusively from answer labels through self-exploration, as introduced in Section 3.1.1. As shown in the last two rows of Table 2, remarkably, when trained with answer-only supervision, **AlphaOPT** achieves accuracy comparable to when it is trained with gold-standard programs. **AlphaOPT** (self-exploration) outperforms all prompt-based methods on test splits of the training data and even achieves the best performance on the OOD OptiBench dataset (92.1% accuracy). This demonstrates another advantage of **AlphaOPT** over fine-tuning–based methods, which require detailed annotations of mathematical formulations and code in order to achieve strong performance.",
+          "score": 0.6200246,
+          "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+          "breadcrumbs": [
+            "4.3 LEARNING WITH LIMITED SUPERVISION"
+          ],
+          "metadata": {
+            "breadcrumbs": [
+              "4.3 LEARNING WITH LIMITED SUPERVISION"
+            ],
+            "title": "",
+            "section": "4.3 LEARNING WITH LIMITED SUPERVISION",
+            "subsection": "",
+            "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+            "page": null,
+            "chunk_type": "section",
+            "length": 938,
+            "has_prefix": true
+          },
+          "recall_method": "fused",
+          "fusion_score": 0.015625,
+          "rerank_score": 0.8975645518591018
+        }
+      ]
+    },
+    {
+      "query_id": "Q3",
+      "query": "AlphaOPT 如何从有限的演示中学习？",
+      "llm_answer": "根据文档内容，AlphaOPT 通过其独特的**自改进经验库框架**，能够从有限的演示（甚至仅从答案标签，而无需黄金标准程序）中高效学习。其核心机制是一个持续的两阶段循环，具体学习方式如下：\n\n### 1. 核心学习机制：两阶段循环\nAlphaOPT 的学习过程不依赖于模型参数更新（微调）或固定的提示模板，而是通过构建和更新一个结构化的**经验库**来实现。每个循环包含：\n- **库学习阶段**：从失败的尝试中提取经验。\n- **库进化阶段**：诊断并优化库中经验的适用条件，以提升泛化能力。\n\n### 2. 从有限演示学习的具体方式\n文档明确指出，AlphaOPT 的学习对监督信号的要求极低，主要体现在：\n\n**a. 学习源：仅答案标签即可**\n- 在现实应用中，黄金标准程序（即完整的数学公式和代码）通常难以获得。AlphaOPT 被设计为可以**仅从问题描述和最终答案**中学习。\n- 实验表明（第4.3节），当仅使用答案进行训练时，AlphaOPT 能达到与使用黄金标准程序训练相当的准确率，甚至在分布外数据集上取得了最佳性能（92.1%准确率）。这证明了其从“弱监督”中学习的能力。\n\n**b. 学习过程：失败驱动与自我探索**\n- **失败驱动**：系统将每次求解失败视为学习机会。当LLM尝试解决问题但得到错误答案时，系统会分析失败原因。\n- **提取结构化洞察**：从失败尝试中，系统提取并验证可重用的建模规则，将其形式化为一个四元组结构：\n    - **分类**：洞察所属的类别。\n    - **条件**：该洞察在何种情况下适用。\n    - **解释**：为什么在此情况下使用该洞察。\n    - **示例**：一个具体的应用实例。\n- **局部验证**：任何新洞察在加入库之前，必须能成功解决其源任务（即导致提取该洞察的那个失败任务），确保其有效性。\n\n**c. 知识表示：显式、可解释的经验库**\n- 学习到的知识不是隐藏在模型权重中，而是以**显式、结构化**的形式存储在经验库里。这使得知识可以被检查、理解和人工干预。\n- 这种表示方式便于**跨任务迁移**，因为系统可以明确地检索“在什么条件下应用什么规则”。\n\n### 3. 与基线方法的对比优势\n文档通过对比，突出了AlphaOPT从有限演示中学习的独特优势：\n- **优于基于提示的方法**：提示方法依赖于固定的模板和示例，一旦示例用完或问题表述稍有变化，性能就会停滞或下降。AlphaOPT则能通过经验库的积累和进化持续改进。\n- **优于基于微调的方法**：微调方法需要大量包含详细公式和代码的标注数据，且由于训练数据中通常缺乏“何时应用何种知识”的中间推理，其泛化能力有限。AlphaOPT仅需答案标签，并通过自我探索从失败中归纳出适用的条件性知识，实现了更强的分布外泛化。\n\n### 总结\nAlphaOPT 从有限演示中学习的关键在于：**它不直接学习生成程序，而是学习一个由“条件-规则”对组成的、可进化、可检索的经验库**。该系统通过分析失败案例，提取经过求解器验证的通用建模洞察，并不断精炼这些洞察的适用条件。这使得它能够从极简的监督信号（如仅有答案）中，高效地积累可迁移的、可解释的优化问题建模知识，从而实现性能的持续提升和出色的泛化能力。\n\n**引用文档关键部分**：\n- 摘要指出其“learns efficiently from limited demonstrations (i.e, even answers alone without gold-standard program)”。\n- 第4.3节实验验证了其仅从答案学习的能力。\n- 第3.1节描述了两阶段循环的具体工作流程。",
+      "llm_accuracy": 1.0,
+      "retrieved_docs": [
+        {
+          "content": "[ABSTRACT]\n\nOptimization modeling enables critical decisions across industries but remains hard to automate: informal language must be mapped to precise mathematical formulations and executable solver code, while prior LLM approaches either rely on brittle prompting or costly retraining with limited generalization. We present **AlphaOPT** , a self-improving _experience library_ that enables an LLM to learn from limited demonstrations (i.e, even answers alone without gold-standard program) and solver feedback without annotated reasoning traces or parameter updates. AlphaOPT operates a continual two-phase cycle: (i) a _Library Learning_ phase that reflects on failed attempts, extracts solver-verified, structured insights as _{taxonomy, condition, explanation, example}_ ; and (ii) a _Library Evolution_ phase that diagnoses retrieval misalignments and refines the applicability conditions of stored insights, improving transfer across tasks. This design (1) learns efficiently from limited demonstrations without curated rationales, (2) expands continually without costly retraining by updating the library rather than model weights, and (3) makes knowledge explicit and interpretable for human inspection and intervention. Experiments show that AlphaOPT steadily improves with more data (65% _→_ 72% from 100 to 300 training items) and surpasses the strongest baseline by 7.7% on the out-of-distribution OptiBench dataset when trained only on answers. AlphaOPT code and data are available at https://github.com/Minw913/AlphaOPT.",
+          "score": 0.7633383,
+          "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+          "breadcrumbs": [
+            "ABSTRACT"
+          ],
+          "metadata": {
+            "breadcrumbs": [
+              "ABSTRACT"
+            ],
+            "title": "",
+            "section": "ABSTRACT",
+            "subsection": "",
+            "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+            "page": null,
+            "chunk_type": "section",
+            "length": 1525,
+            "has_prefix": true
+          },
+          "recall_method": "fused",
+          "fusion_score": 0.01639344262295082,
+          "rerank_score": 1.0
+        },
+        {
+          "content": "[4.3 LEARNING WITH LIMITED SUPERVISION]\n\nIn practical OR applications, gold-standard programs are rarely available. We therefore test whether AlphaOPT can learn solely from answers. Since two datasets in our training set contain goldstandard programs, we remove them in this experiment and let **AlphaOPT** learn exclusively from answer labels through self-exploration, as introduced in Section 3.1.1. As shown in the last two rows of Table 2, remarkably, when trained with answer-only supervision, **AlphaOPT** achieves accuracy comparable to when it is trained with gold-standard programs. **AlphaOPT** (self-exploration) outperforms all prompt-based methods on test splits of the training data and even achieves the best performance on the OOD OptiBench dataset (92.1% accuracy). This demonstrates another advantage of **AlphaOPT** over fine-tuning–based methods, which require detailed annotations of mathematical formulations and code in order to achieve strong performance.",
+          "score": 0.7084826,
+          "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+          "breadcrumbs": [
+            "4.3 LEARNING WITH LIMITED SUPERVISION"
+          ],
+          "metadata": {
+            "breadcrumbs": [
+              "4.3 LEARNING WITH LIMITED SUPERVISION"
+            ],
+            "title": "",
+            "section": "4.3 LEARNING WITH LIMITED SUPERVISION",
+            "subsection": "",
+            "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+            "page": null,
+            "chunk_type": "section",
+            "length": 938,
+            "has_prefix": true
+          },
+          "recall_method": "fused",
+          "fusion_score": 0.016129032258064516,
+          "rerank_score": 0.9694209450873505
+        },
+        {
+          "content": "[1 INTRODUCTION]\n\nOptimization models support critical decision-making in finance, manufacturing, marketing, transportation, and logistics (AhmadiTeshnizi et al., 2023; Bertsimas & Tsitsiklis, 1997; Ramamonjison et al., 2022). Beyond improving efficiency, automating the optimization workflow lowers the barrier to operations research expertise in industry, enabling non-experts to prototype faster, iterate on formulations, and deploy solver-backed decisions at scale. Yet this process has long been challenging, as informal and often ambiguous specifications must be mapped to precise, domain-specific formulations and paired with appropriate code and solvers, creating major bottlenecks for end-to-end automation (Jiang et al., 2025).  \nAdvances in large language models (LLMs) make this vision increasingly feasible: they can parse natural language requirements (Ouyang et al., 2022), generate executable programs (Nijkamp et al.; Jimenez et al., 2024), and orchestrate downstream tools (Qin et al., 2024). Two main lines of work  \n> _∗_ Equal contribution.  \n> _†_ Correspondence: qua@mit.edu  \n1  \nPreprint  \nhave emerged. Prompt-based systems steer general LLMs with structured prompts and tool use (Xiao et al., 2023; Thind et al., 2025; AhmadiTeshnizi et al., 2024; Zhang & Luo, 2025). Finetuning approaches adapt models on domain corpora and benchmarks (Huang et al., 2025; Yang et al., 2024). Despite this progress, both families face limitations: prompt-based systems stop improving once they run out of fixed templates, and they are fragile to small wording changes and shifts in the domain; fine-tuned models require costly retraining and, critically, most benchmarks and datasets in the community (e.g., NLP4LP (AhmadiTeshnizi et al., 2024), MAMO (Huang et al., 2024), IndustryOR (Huang et al., 2025)) contain only programs/solutions rather than the intermediate reasoning that governs modeling choices, thereby limiting the generalizability of fine-tuning approaches. This motivates a new learning paradigm for optimization formulation: instead of relying solely on prompts or retraining, LLMs should continually improve by accumulating, refining, and reusing solver-verified modeling insights.  \n![](data/images/AlphaOPT_Formulating_Optimization_Programs_with_Self-Improving_LLM_Experience_Library.pdf-0002-02.png)  \nFigure 1: AlphaOPT identifies and retrieves relevant insights to guide problem solving. In this example, it avoids the common mistake of minimizing the sum of process times and instead introduces an auxiliary variable to correctly minimize the makespan, leading to the correct solution.  \nWe propose **AlphaOPT** , a self-improving framework that builds and refines a structured library of solver-verified insights for optimization formulation, as exemplified in Figure 1. Each insight encodes a reusable modeling rule in the form of a 4-tuple ( _taxonomy_ , _(applicability) condition_ , _explanation_ , _example_ ), which specifies not only what to reuse but also when and why it applies. We remark that our library learning framework does not require backpropagation to update framework parameters and can be regarded as the evolutionary mechanism. **AlphaOPT** improves through a continual two-phase cycle. Library Learning acquires new insights from both gold programs (when available) and solver-verified answer-only supervision, organizing them into a dynamically updating hierarchical taxonomy. Library Evolution then diagnoses misalignments between tasks and insight applicability, and refines conditions using aggregate evidence, ensuring that insights remain neither too narrow nor overly general. This design yields a principled optimization view: library construction corresponds to maximizing expected task success induced by task–insight matching while regularizing size to maintain efficiency and prevent redundancy.  \nWe conduct quantitative experiments across multiple benchmarks and baselines, as well as qualitative analyses of the learned library. The results show that, compared to prompt-based or fine-tuning approaches, **AlphaOPT** (1) learns efficiently from limited demonstrations (i.e., it can learn from answers without recalling formulation) without requiring annotated reasoning traces or even goldstandard programs, (2) achieves stronger out-of-distribution generalizability and more consistent continual growth than learning-based methods, and (3) makes knowledge explicit and interpretable for human inspection and involvement.  \nBeyond these advantages, **AlphaOPT** also achieves state-of-the-art performance on multiple benchmarks. These results demonstrate the efficacy and potential of self-improving experience-library  \n2  \nPreprint  \nlearning for optimization formulation, paving the way toward more challenging settings, such as efficient program formulation and large-scale optimization.  \nOur main contributions are threefold:  \n- **A library learning framework that learns from answers only.** We propose the first experience-library learning framework for natural language optimization formulation tasks, formally grounded in a mathematical view. The system can learn solely from answers, without requiring gold-standard programs.  \n- **A reusable and interpretable experience library.** We construct the first solver-verified library of structured modeling insights for LLM systems, designed to be reusable across tasks and explicitly interpretable for reliable transfer in operations research domains.  \n- **State-of-the-art out-of-distribution generalization.** AlphaOPT achieves strong generalization beyond training distributions, attaining state-of-the-art performance on LogiOR and OptiBench benchmarks.",
+          "score": 0.6380831,
+          "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+          "breadcrumbs": [
+            "1 INTRODUCTION"
+          ],
+          "metadata": {
+            "breadcrumbs": [
+              "1 INTRODUCTION"
+            ],
+            "title": "",
+            "section": "1 INTRODUCTION",
+            "subsection": "",
+            "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+            "page": null,
+            "chunk_type": "section",
+            "length": 5673,
+            "has_prefix": true
+          },
+          "recall_method": "fused",
+          "fusion_score": 0.014492753623188406,
+          "rerank_score": 0.8978764793019582
+        }
+      ]
+    },
+    {
+      "query_id": "Q4",
+      "query": "AlphaOPT 的库学习阶段如何工作？",
+      "llm_answer": "根据文档内容，AlphaOPT的**库学习阶段（Library Learning Phase）** 是其持续两阶段循环中的第一个阶段，其核心工作流程和特点如下：\n\n### 核心目标\n从解决优化问题的尝试（包括成功和失败的尝试）中，提取出可重用、经过求解器验证的结构化建模见解，并将其组织成一个不断更新的经验库，而**无需依赖人工标注的推理过程或黄金标准程序**。\n\n### 工作流程与关键机制\n1.  **失败驱动与本地验证的学习**：\n    *   该阶段是**失败驱动**的，将每次求解错误都转化为学习机会。\n    *   它从对**单个任务**的求解尝试中提取见解。这些尝试可以是在**黄金程序监督**下进行，也可以仅在**答案标签监督**下通过自我探索进行。\n    *   一个关键原则是**本地验证**：任何新提取的见解必须能成功解决其来源任务，才会被纳入库中。\n\n2.  **结构化见解的提取**：\n    *   提取的见解被编码为一个明确的4元组结构：`{分类， 适用条件， 解释， 示例}`。\n    *   这种结构不仅说明了“重用什么”（建模规则），还明确了“何时以及为何适用”（适用条件和解释），使知识显式化、可解释。\n\n3.  **最小化冗余与保持紧凑**：\n    *   在提取新见解的过程中，框架会**最小化冗余**，避免库的无限膨胀。\n    *   冗余的见解会被合并，其适用条件会被精炼，以确保库既**紧凑又可泛化**，从而有利于后续的检索和执行效率。\n\n### 在整体框架中的位置\n*   库学习阶段与**库进化阶段（Library Evolution）** 形成一个持续的“获取-精炼”循环。\n*   库学习阶段负责**获取新知识**（如图3左面板所示），而库进化阶段则负责**诊断任务与见解之间的错配**，并基于聚合证据精炼见解的适用条件，防止其过于狭隘或过度泛化。\n*   这个循环会持续迭代，直到达到停止标准（当前模型无法再做出有意义的改进）。\n\n### 独特优势\n*   **仅从答案中学习**：文档特别强调，在黄金程序稀缺的实际应用中，AlphaOPT的库学习阶段能够**仅从答案标签**中通过自我探索进行有效学习，其性能可与使用黄金程序训练时相媲美，甚至在某些分布外测试集上达到最佳性能。\n*   **无需更新模型参数**：整个学习过程通过更新经验库（而非LLM的模型权重）来实现性能提升，避免了昂贵的重新训练。\n\n**总结来说，AlphaOPT的库学习阶段是一个通过分析（特别是失败的）求解尝试，自动提取、验证并结构化可重用建模规则的过程。它利用有限的监督信号（甚至只有答案），以失败为驱动，构建一个紧凑、可解释且持续增长的经验知识库，为后续的问题求解提供指导。**\n\n> 依据来源：文档的[ABSTRACT]、[3.1 ALPHAOPT FRAMEWORK]、[3 METHODOLOGY]、[4.3 LEARNING WITH LIMITED SUPERVISION]及[1 INTRODUCTION]部分。",
+      "llm_accuracy": 1.0,
+      "retrieved_docs": [
+        {
+          "content": "[ABSTRACT]\n\nOptimization modeling enables critical decisions across industries but remains hard to automate: informal language must be mapped to precise mathematical formulations and executable solver code, while prior LLM approaches either rely on brittle prompting or costly retraining with limited generalization. We present **AlphaOPT** , a self-improving _experience library_ that enables an LLM to learn from limited demonstrations (i.e, even answers alone without gold-standard program) and solver feedback without annotated reasoning traces or parameter updates. AlphaOPT operates a continual two-phase cycle: (i) a _Library Learning_ phase that reflects on failed attempts, extracts solver-verified, structured insights as _{taxonomy, condition, explanation, example}_ ; and (ii) a _Library Evolution_ phase that diagnoses retrieval misalignments and refines the applicability conditions of stored insights, improving transfer across tasks. This design (1) learns efficiently from limited demonstrations without curated rationales, (2) expands continually without costly retraining by updating the library rather than model weights, and (3) makes knowledge explicit and interpretable for human inspection and intervention. Experiments show that AlphaOPT steadily improves with more data (65% _→_ 72% from 100 to 300 training items) and surpasses the strongest baseline by 7.7% on the out-of-distribution OptiBench dataset when trained only on answers. AlphaOPT code and data are available at https://github.com/Minw913/AlphaOPT.",
+          "score": 0.68394667,
+          "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+          "breadcrumbs": [
+            "ABSTRACT"
+          ],
+          "metadata": {
+            "breadcrumbs": [
+              "ABSTRACT"
+            ],
+            "title": "",
+            "section": "ABSTRACT",
+            "subsection": "",
+            "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+            "page": null,
+            "chunk_type": "section",
+            "length": 1525,
+            "has_prefix": true
+          },
+          "recall_method": "fused",
+          "fusion_score": 0.016129032258064516,
+          "rerank_score": 1.0
+        },
+        {
+          "content": "[3.1 ALPHAOPT FRAMEWORK]\n\n![](data/images/AlphaOPT_Formulating_Optimization_Programs_with_Self-Improving_LLM_Experience_Library.pdf-0004-06.png)  \nFigure 2: AlphaOPT builds and refines an experience library over multiple iterations. Each iteration consists of a library learning stage, which produces insights from attempts to solve tasks, and a library refinement stage, which adjusts the applicability of insights to avoid being too narrow or too general.  \nThe framework incrementally learns a structured library of experiences over iterations until a stopping criterion indicates that the current model can no longer make meaningful improvements. As illustrated in Figure 2, each iteration consists of two complementary phases that form a continual cycle of acquisition and refinement. The first phase, Library Learning, extracts insights from individual tasks under either gold-program or answer-only supervision while minimizing redundancy. The second phase, Library Evolution, diagnoses misalignments between insights and tasks and refines applicability conditions to enhance generalization while reducing confusion caused by  \n4  \nPreprint  \novergeneralization. The design follows three guiding principles: it is failure-driven (every error becomes a learning opportunity), locally validated (an insight must solve its source task before being admitted), and compact yet generalizable (redundant insights are merged and conditions refined to prevent uncontrolled growth that hinders retrieval and execution). The prompts for all LLM modules are provided in Appendix E.  \n![](data/images/AlphaOPT_Formulating_Optimization_Programs_with_Self-Improving_LLM_Experience_Library.pdf-0005-02.png)  \nFigure 3: The overall workflow of library learning and evolution. The left panel depicts two complementary flows: library learning, which extracts new insights by generating and consolidating insights from failed optimization attempts, and library diagnosis, which analyzes interactions between failed tasks and retrieved insights to collect negative and unretrieved cases for refinement. The right panel illustrates library refinement, where the LLM refines each insight’s applicability conditions, validates them via retrieval replay, and integrates the updated insights back into the library.",
+          "score": 0.69508326,
+          "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+          "breadcrumbs": [
+            "3.1 ALPHAOPT FRAMEWORK"
+          ],
+          "metadata": {
+            "breadcrumbs": [
+              "3.1 ALPHAOPT FRAMEWORK"
+            ],
+            "title": "",
+            "section": "3.1 ALPHAOPT FRAMEWORK",
+            "subsection": "",
+            "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+            "page": null,
+            "chunk_type": "section",
+            "length": 2269,
+            "has_prefix": true
+          },
+          "recall_method": "fused",
+          "fusion_score": 0.01639344262295082,
+          "rerank_score": 0.96312760452746
+        },
+        {
+          "content": "[3 METHODOLOGY]\n\nOptimization tasks arrive with diverse natural-language descriptions, yet they share recurring modeling rules that activate under identifiable conditions. We identify three major challenges in building reliable systems that leverage LLMs to formulate and solve optimization problems using existing technologies and resources. First, gold-standard programs are scarce and may contain annotation errors (Jiang et al., 2025; Yang et al., 2025a), while datasets with only answer labels remain underutilized (Huang et al., 2024; 2025; Lu et al., 2025). Second, fine-tuned models (Huang et al., 2025; Jiang et al., 2025) struggle to generalize because the crucial when-to-apply-what knowledge is weakly represented (or missing) in training data; they can mimic syntax without mastering applicability. Third, the performance of prompt-based agent systems AhmadiTeshnizi et al. (2023); Xiao et al. (2023); Yang et al. (2025a) stagnates as the number of exemplars increases: they rely on human empirical curation and lack the capacity to adapt or to continually learn from larger datasets.  \nWe propose AlphaOPT, an experience-library learning framework that learns from both gold programs (when available) and answer-only supervision. AlphaOPT iteratively builds a structured, solver-verified repository of reusable insights with explicit applicability conditions and evolves these conditions at the population level to improve generalization while avoiding redundancy. This twostage design is described in Section 3.1. In Section 3.2, we provide a mathematical interpretation that frames library construction as maximizing task success with a size regularizer. In Section A, we compare our method with prior works on learning from experience and self-evolving problemsolving agents.",
+          "score": 0.6418996,
+          "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+          "breadcrumbs": [
+            "3 METHODOLOGY"
+          ],
+          "metadata": {
+            "breadcrumbs": [
+              "3 METHODOLOGY"
+            ],
+            "title": "",
+            "section": "3 METHODOLOGY",
+            "subsection": "",
+            "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+            "page": null,
+            "chunk_type": "section",
+            "length": 1775,
+            "has_prefix": true
+          },
+          "recall_method": "fused",
+          "fusion_score": 0.015384615384615385,
+          "rerank_score": 0.9032432197596261
+        }
+      ]
+    },
+    {
+      "query_id": "Q5",
+      "query": "AlphaOPT 的库进化阶段如何工作？",
+      "llm_answer": "根据文档内容，AlphaOPT的**库进化阶段**（Library Evolution）是其持续两阶段循环中的第二个关键阶段，旨在诊断和修正经验库中知识（即“洞察”）的检索与应用问题，以提升系统的泛化能力。该阶段的工作机制可以详细阐述如下：\n\n### 核心目标\n库进化阶段的主要目标是**诊断洞察与任务之间的错位**，并**精细化存储洞察的适用性条件**，从而避免洞察因条件过于狭窄而无法被检索到，或因过于宽泛而导致误用和混淆。其最终目的是**增强知识在不同任务间的可迁移性**。\n\n### 工作流程与机制\n根据文档（特别是第3.1节及图2、图3的描述），库进化阶段的具体工作包含以下互补的过程：\n\n1.  **库诊断**：\n    *   系统会分析**失败的任务**与**检索到的洞察**之间的交互。\n    *   通过这种分析，收集两种关键案例用于后续修正：\n        *   **负面案例**：检索到的洞察被应用，但未能成功解决问题。\n        *   **未检索案例**：本应能解决问题的洞察，却因适用性条件不匹配而未被检索到。\n    *   这一过程旨在识别当前库中洞察在适用性条件上存在的“过窄”或“过宽”问题。\n\n2.  **库精炼**：\n    *   基于诊断收集的证据，大型语言模型（LLM）会对相关洞察的**适用性条件**进行修正和细化。\n    *   精炼后的条件会通过**检索重放**进行验证，以确保其有效性。\n    *   最终，更新后的洞察会被整合回经验库中，完成库的进化。\n\n### 设计原则与特点\n库进化阶段的设计遵循并体现了AlphaOPT框架的整体指导原则：\n\n*   **失败驱动**：将每一次任务失败都转化为学习机会，驱动对库内容的诊断与改进。\n*   **提升泛化与防止冗余**：通过调整适用性条件，使洞察能更准确地匹配到真正相关的任务，同时避免库的无控制增长。文档指出，该阶段旨在“增强泛化，同时减少因过度泛化引起的混淆”。\n*   **无需权重更新**：与微调方法不同，库进化通过更新**库本身的结构化内容**（洞察的适用性条件）来实现系统改进，而**不需要**对底层LLM进行参数更新或重新训练，这是一种高效且可持续的进化机制。\n\n### 总结\n总而言之，AlphaOPT的库进化阶段是一个**基于证据的、自我修正的闭环过程**。它通过系统性地分析失败案例，利用LLM来诊断和修正经验库中结构化洞察的适用性边界，从而动态地优化知识检索的准确性。这一机制使得AlphaOPT能够**持续适应新任务，并提高其在分布外数据上的泛化性能**，这是其相较于依赖固定提示模板或需要昂贵重训练的基线方法的关键优势之一。",
+      "llm_accuracy": 1.0,
+      "retrieved_docs": [
+        {
+          "content": "[ABSTRACT]\n\nOptimization modeling enables critical decisions across industries but remains hard to automate: informal language must be mapped to precise mathematical formulations and executable solver code, while prior LLM approaches either rely on brittle prompting or costly retraining with limited generalization. We present **AlphaOPT** , a self-improving _experience library_ that enables an LLM to learn from limited demonstrations (i.e, even answers alone without gold-standard program) and solver feedback without annotated reasoning traces or parameter updates. AlphaOPT operates a continual two-phase cycle: (i) a _Library Learning_ phase that reflects on failed attempts, extracts solver-verified, structured insights as _{taxonomy, condition, explanation, example}_ ; and (ii) a _Library Evolution_ phase that diagnoses retrieval misalignments and refines the applicability conditions of stored insights, improving transfer across tasks. This design (1) learns efficiently from limited demonstrations without curated rationales, (2) expands continually without costly retraining by updating the library rather than model weights, and (3) makes knowledge explicit and interpretable for human inspection and intervention. Experiments show that AlphaOPT steadily improves with more data (65% _→_ 72% from 100 to 300 training items) and surpasses the strongest baseline by 7.7% on the out-of-distribution OptiBench dataset when trained only on answers. AlphaOPT code and data are available at https://github.com/Minw913/AlphaOPT.",
+          "score": 0.661823,
+          "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+          "breadcrumbs": [
+            "ABSTRACT"
+          ],
+          "metadata": {
+            "breadcrumbs": [
+              "ABSTRACT"
+            ],
+            "title": "",
+            "section": "ABSTRACT",
+            "subsection": "",
+            "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+            "page": null,
+            "chunk_type": "section",
+            "length": 1525,
+            "has_prefix": true
+          },
+          "recall_method": "fused",
+          "fusion_score": 0.016129032258064516,
+          "rerank_score": 0.985890866059624
+        },
+        {
+          "content": "[3.1 ALPHAOPT FRAMEWORK]\n\n![](data/images/AlphaOPT_Formulating_Optimization_Programs_with_Self-Improving_LLM_Experience_Library.pdf-0004-06.png)  \nFigure 2: AlphaOPT builds and refines an experience library over multiple iterations. Each iteration consists of a library learning stage, which produces insights from attempts to solve tasks, and a library refinement stage, which adjusts the applicability of insights to avoid being too narrow or too general.  \nThe framework incrementally learns a structured library of experiences over iterations until a stopping criterion indicates that the current model can no longer make meaningful improvements. As illustrated in Figure 2, each iteration consists of two complementary phases that form a continual cycle of acquisition and refinement. The first phase, Library Learning, extracts insights from individual tasks under either gold-program or answer-only supervision while minimizing redundancy. The second phase, Library Evolution, diagnoses misalignments between insights and tasks and refines applicability conditions to enhance generalization while reducing confusion caused by  \n4  \nPreprint  \novergeneralization. The design follows three guiding principles: it is failure-driven (every error becomes a learning opportunity), locally validated (an insight must solve its source task before being admitted), and compact yet generalizable (redundant insights are merged and conditions refined to prevent uncontrolled growth that hinders retrieval and execution). The prompts for all LLM modules are provided in Appendix E.  \n![](data/images/AlphaOPT_Formulating_Optimization_Programs_with_Self-Improving_LLM_Experience_Library.pdf-0005-02.png)  \nFigure 3: The overall workflow of library learning and evolution. The left panel depicts two complementary flows: library learning, which extracts new insights by generating and consolidating insights from failed optimization attempts, and library diagnosis, which analyzes interactions between failed tasks and retrieved insights to collect negative and unretrieved cases for refinement. The right panel illustrates library refinement, where the LLM refines each insight’s applicability conditions, validates them via retrieval replay, and integrates the updated insights back into the library.",
+          "score": 0.67561996,
+          "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+          "breadcrumbs": [
+            "3.1 ALPHAOPT FRAMEWORK"
+          ],
+          "metadata": {
+            "breadcrumbs": [
+              "3.1 ALPHAOPT FRAMEWORK"
+            ],
+            "title": "",
+            "section": "3.1 ALPHAOPT FRAMEWORK",
+            "subsection": "",
+            "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+            "page": null,
+            "chunk_type": "section",
+            "length": 2269,
+            "has_prefix": true
+          },
+          "recall_method": "fused",
+          "fusion_score": 0.01639344262295082,
+          "rerank_score": 0.9581668306281633
+        },
+        {
+          "content": "[1 INTRODUCTION]\n\nOptimization models support critical decision-making in finance, manufacturing, marketing, transportation, and logistics (AhmadiTeshnizi et al., 2023; Bertsimas & Tsitsiklis, 1997; Ramamonjison et al., 2022). Beyond improving efficiency, automating the optimization workflow lowers the barrier to operations research expertise in industry, enabling non-experts to prototype faster, iterate on formulations, and deploy solver-backed decisions at scale. Yet this process has long been challenging, as informal and often ambiguous specifications must be mapped to precise, domain-specific formulations and paired with appropriate code and solvers, creating major bottlenecks for end-to-end automation (Jiang et al., 2025).  \nAdvances in large language models (LLMs) make this vision increasingly feasible: they can parse natural language requirements (Ouyang et al., 2022), generate executable programs (Nijkamp et al.; Jimenez et al., 2024), and orchestrate downstream tools (Qin et al., 2024). Two main lines of work  \n> _∗_ Equal contribution.  \n> _†_ Correspondence: qua@mit.edu  \n1  \nPreprint  \nhave emerged. Prompt-based systems steer general LLMs with structured prompts and tool use (Xiao et al., 2023; Thind et al., 2025; AhmadiTeshnizi et al., 2024; Zhang & Luo, 2025). Finetuning approaches adapt models on domain corpora and benchmarks (Huang et al., 2025; Yang et al., 2024). Despite this progress, both families face limitations: prompt-based systems stop improving once they run out of fixed templates, and they are fragile to small wording changes and shifts in the domain; fine-tuned models require costly retraining and, critically, most benchmarks and datasets in the community (e.g., NLP4LP (AhmadiTeshnizi et al., 2024), MAMO (Huang et al., 2024), IndustryOR (Huang et al., 2025)) contain only programs/solutions rather than the intermediate reasoning that governs modeling choices, thereby limiting the generalizability of fine-tuning approaches. This motivates a new learning paradigm for optimization formulation: instead of relying solely on prompts or retraining, LLMs should continually improve by accumulating, refining, and reusing solver-verified modeling insights.  \n![](data/images/AlphaOPT_Formulating_Optimization_Programs_with_Self-Improving_LLM_Experience_Library.pdf-0002-02.png)  \nFigure 1: AlphaOPT identifies and retrieves relevant insights to guide problem solving. In this example, it avoids the common mistake of minimizing the sum of process times and instead introduces an auxiliary variable to correctly minimize the makespan, leading to the correct solution.  \nWe propose **AlphaOPT** , a self-improving framework that builds and refines a structured library of solver-verified insights for optimization formulation, as exemplified in Figure 1. Each insight encodes a reusable modeling rule in the form of a 4-tuple ( _taxonomy_ , _(applicability) condition_ , _explanation_ , _example_ ), which specifies not only what to reuse but also when and why it applies. We remark that our library learning framework does not require backpropagation to update framework parameters and can be regarded as the evolutionary mechanism. **AlphaOPT** improves through a continual two-phase cycle. Library Learning acquires new insights from both gold programs (when available) and solver-verified answer-only supervision, organizing them into a dynamically updating hierarchical taxonomy. Library Evolution then diagnoses misalignments between tasks and insight applicability, and refines conditions using aggregate evidence, ensuring that insights remain neither too narrow nor overly general. This design yields a principled optimization view: library construction corresponds to maximizing expected task success induced by task–insight matching while regularizing size to maintain efficiency and prevent redundancy.  \nWe conduct quantitative experiments across multiple benchmarks and baselines, as well as qualitative analyses of the learned library. The results show that, compared to prompt-based or fine-tuning approaches, **AlphaOPT** (1) learns efficiently from limited demonstrations (i.e., it can learn from answers without recalling formulation) without requiring annotated reasoning traces or even goldstandard programs, (2) achieves stronger out-of-distribution generalizability and more consistent continual growth than learning-based methods, and (3) makes knowledge explicit and interpretable for human inspection and involvement.  \nBeyond these advantages, **AlphaOPT** also achieves state-of-the-art performance on multiple benchmarks. These results demonstrate the efficacy and potential of self-improving experience-library  \n2  \nPreprint  \nlearning for optimization formulation, paving the way toward more challenging settings, such as efficient program formulation and large-scale optimization.  \nOur main contributions are threefold:  \n- **A library learning framework that learns from answers only.** We propose the first experience-library learning framework for natural language optimization formulation tasks, formally grounded in a mathematical view. The system can learn solely from answers, without requiring gold-standard programs.  \n- **A reusable and interpretable experience library.** We construct the first solver-verified library of structured modeling insights for LLM systems, designed to be reusable across tasks and explicitly interpretable for reliable transfer in operations research domains.  \n- **State-of-the-art out-of-distribution generalization.** AlphaOPT achieves strong generalization beyond training distributions, attaining state-of-the-art performance on LogiOR and OptiBench benchmarks.",
+          "score": 0.58848935,
+          "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+          "breadcrumbs": [
+            "1 INTRODUCTION"
+          ],
+          "metadata": {
+            "breadcrumbs": [
+              "1 INTRODUCTION"
+            ],
+            "title": "",
+            "section": "1 INTRODUCTION",
+            "subsection": "",
+            "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+            "page": null,
+            "chunk_type": "section",
+            "length": 5673,
+            "has_prefix": true
+          },
+          "recall_method": "fused",
+          "fusion_score": 0.014925373134328358,
+          "rerank_score": 0.8806057538611044
+        }
+      ]
+    },
+    {
+      "query_id": "Q6",
+      "query": "AlphaOPT 在哪些基准测试上表现如何？",
+      "llm_answer": "根据文档内容，AlphaOPT 在多个基准测试上的表现如下：\n\n### 1. **分布外（Out-of-Distribution, OOD）数据集**\nAlphaOPT 在这些未见过的数据集上取得了最佳或极具竞争力的准确率，展现了强大的泛化能力：\n- **LogiOR**：达到 **51.1%** 的准确率。\n- **OptiBench**：达到 **91.8%** 的准确率（在仅使用答案标签进行训练时，甚至提升至 **92.1%**）。\n- **OptMath**：虽未明确给出具体数值，但文档指出 AlphaOPT 在所有三个基准测试（包括 OptMath）中均保持了较高的准确率，且明显优于基线模型（如 ORLM 在 OptMath 上仅 13.3%）。\n\n### 2. **分布内（In-Distribution）数据集**\nAlphaOPT 在所有分布内数据集上表现具有竞争力，并在部分数据集上匹配或超越基线：\n- **IndustryOR** 和 **MAMO(ComplexLP)**：匹配或超过了基线模型的表现。\n- **整体表现**：文档指出，尽管微调模型（如 ORLM、LLMOPT）在某些分布内数据集（如 NLP4LP、MAMO）上分数更高，但这些优势可能源于其训练数据与测试集的重叠或对少量种子问题的模式记忆。相比之下，AlphaOPT 在所有分布内数据集上均保持竞争性表现，且**在分布外泛化上保持明显优势**。\n\n### 3. **在有限监督下的表现**\n当仅使用答案标签（而无黄金标准程序）进行训练时：\n- AlphaOPT 在训练数据的测试分割上**优于所有基于提示的方法**。\n- 在 OOD 数据集 **OptiBench** 上取得了 **92.1%** 的最佳性能。\n- 其准确率与使用黄金标准程序训练时相当，显示了从极简演示中高效学习的能力。\n\n### 4. **随数据量增长的表现**\n随着训练数据量从 100 项增加到 300 项，AlphaOPT 在分布外数据集上的性能持续提升，且无需更新模型参数：\n- **微观平均准确率** 从 83.24% 提升至 85.21%。\n- **宏观平均准确率** 从 65.80% 提升至 72.12%。\n\n### 总结\nAlphaOPT 的核心优势体现在：\n- **强大的分布外泛化能力**：在 LogiOR 和 OptiBench 等未见数据集上准确率显著领先。\n- **竞争性的分布内性能**：在所有分布内任务上保持稳健表现。\n- **从极简监督中学习**：仅凭答案标签即可达到与使用完整标注相当的效果。\n- **持续改进能力**：性能随数据量增加而稳定提升，且通过更新经验库而非模型参数实现，成本低廉。\n\n这些结果共同表明，AlphaOPT 通过其经验库学习到了可迁移的建模原理，而非数据特定的语法，因此对分布变化具有更强的鲁棒性。",
+      "llm_accuracy": 1.0,
+      "retrieved_docs": [
+        {
+          "content": "[4.5 OVERALL PERFORMANCE]\n\n**AlphaOPT** achieves the best accuracy on out-of-distribution datasets, reaching 51 _._ 1% on LogiOR and 91 _._ 8% on OptiBench. On in-distribution test splits, fine-tuned models such as ORLM and LLMOPT achieve higher scores on certain datasets (e.g., LLMOPT obtains 97 _._ 3% on NLP4LP and 85 _._ 8% on MAMO). However, these advantages are less conclusive, since LLMOPT’s training data are not publicly available and may overlap with our test splits. Moreover, many existing benchmarks are derived from a small set of seed problems (Ramamonjison et al., 2022; Huang et al., 2024), which favors fine-tuning approaches that excel at pattern memorization. In contrast, **AlphaOPT** performs competitively across all in-distribution datasets, matches or exceeds baselines on IndustryOR and MAMO(ComplexLP), and maintains a clear margin on out-of-distribution generalization. These results demonstrate that the experience library enables **AlphaOPT** to learn transferable modeling principles rather than dataset-specific syntax, resulting in stronger robustness to distribution shifts.",
+          "score": 0.6937058,
+          "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+          "breadcrumbs": [
+            "4.5 OVERALL PERFORMANCE"
+          ],
+          "metadata": {
+            "breadcrumbs": [
+              "4.5 OVERALL PERFORMANCE"
+            ],
+            "title": "",
+            "section": "4.5 OVERALL PERFORMANCE",
+            "subsection": "",
+            "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+            "page": null,
+            "chunk_type": "section",
+            "length": 1083,
+            "has_prefix": true
+          },
+          "recall_method": "fused",
+          "fusion_score": 0.01639344262295082,
+          "rerank_score": 0.9800898917202313
+        },
+        {
+          "content": "[4.2 OUT-OF-DISTRIBUTION GENERALIZATION]\n\nWe evaluate how well different methods generalize beyond their training distribution. For this purpose, we use two benchmarks that were not included during training: LogiOR (Yang et al., 2025a) and OptiBench (Yang et al., 2024). Details are provided in Appendix B.  \n![](data/images/AlphaOPT_Formulating_Optimization_Programs_with_Self-Improving_LLM_Experience_Library.pdf-0008-09.png)  \nThese datasets were either released after the baseline model (ORLM) or explicitly designed in baseline model’s experiment setting to avoid overlap with their training set (LLMOPT).  \nFigure 5: Performance on out-of-distribution datasets. Numbers report test accuracy on LogiOR, OptiBench, and OptMath.  \nFigure 5 summarizes the results. OptMath. Fine-tuned models such as ORLM and LLMOPT show strong indistribution performance but exhibit a noticeable drop on unseen datasets. For example, ORLM falls to 19 _._ 6% on LogiOR and 13 _._ 3% on OptMath, while LLMOPT performs better but still degrades compared to its in-distribution performance. By contrast, AlphaOPT maintains higher accuracy across all three benchmarks, reaching 51 _._ 1% on LogiOR and 91 _._ 8% on OptiBench. These results support our hypothesis: finetuned models tend to learn the syntax of solutions and may perform well when problems are very similar, but they struggle to capture the underlying principles needed for broader problem solving.  \n8  \nPreprint  \nIn contrast, the learned experience library equips **AlphaOPT** with stronger out-of-distribution generalization capability.",
+          "score": 0.6267628,
+          "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+          "breadcrumbs": [
+            "4.2 OUT-OF-DISTRIBUTION GENERALIZATION"
+          ],
+          "metadata": {
+            "breadcrumbs": [
+              "4.2 OUT-OF-DISTRIBUTION GENERALIZATION"
+            ],
+            "title": "",
+            "section": "4.2 OUT-OF-DISTRIBUTION GENERALIZATION",
+            "subsection": "",
+            "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+            "page": null,
+            "chunk_type": "section",
+            "length": 1543,
+            "has_prefix": true
+          },
+          "recall_method": "fused",
+          "fusion_score": 0.015151515151515152,
+          "rerank_score": 0.9625865836981272
+        },
+        {
+          "content": "[4.3 LEARNING WITH LIMITED SUPERVISION]\n\nIn practical OR applications, gold-standard programs are rarely available. We therefore test whether AlphaOPT can learn solely from answers. Since two datasets in our training set contain goldstandard programs, we remove them in this experiment and let **AlphaOPT** learn exclusively from answer labels through self-exploration, as introduced in Section 3.1.1. As shown in the last two rows of Table 2, remarkably, when trained with answer-only supervision, **AlphaOPT** achieves accuracy comparable to when it is trained with gold-standard programs. **AlphaOPT** (self-exploration) outperforms all prompt-based methods on test splits of the training data and even achieves the best performance on the OOD OptiBench dataset (92.1% accuracy). This demonstrates another advantage of **AlphaOPT** over fine-tuning–based methods, which require detailed annotations of mathematical formulations and code in order to achieve strong performance.",
+          "score": 0.6663432,
+          "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+          "breadcrumbs": [
+            "4.3 LEARNING WITH LIMITED SUPERVISION"
+          ],
+          "metadata": {
+            "breadcrumbs": [
+              "4.3 LEARNING WITH LIMITED SUPERVISION"
+            ],
+            "title": "",
+            "section": "4.3 LEARNING WITH LIMITED SUPERVISION",
+            "subsection": "",
+            "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+            "page": null,
+            "chunk_type": "section",
+            "length": 938,
+            "has_prefix": true
+          },
+          "recall_method": "fused",
+          "fusion_score": 0.015873015873015872,
+          "rerank_score": 0.9569486893452912
+        }
+      ]
+    },
+    {
+      "query_id": "Q7",
+      "query": "AlphaOPT 的经验库包含哪些类型的洞察？",
+      "llm_answer": "根据文档内容，AlphaOPT 的经验库包含一种结构化的、可重用的建模洞察，其具体形式为一个 **4元组（4-tuple）**，包含以下四个组成部分：\n\n1.  **分类（Taxonomy）**：将洞察组织到一个动态更新的层次化分类体系中，有助于知识的系统化管理和检索。\n2.  **（适用）条件（(Applicability) Condition）**：明确界定该洞察在何种情境或条件下适用。这是确保知识可迁移和防止误用的关键。\n3.  **解释（Explanation）**：说明该洞察背后的原理或理由，即“为什么”要这样建模。\n4.  **示例（Example）**：提供一个具体的实例，展示如何应用该洞察来解决实际问题。\n\n**核心特性与来源**：\n*   **结构化与显性化**：这种格式使得知识变得**明确且可解释**，便于人类检查、干预和审计。\n*   **求解器验证（Solver-verified）**：库中的每一条洞察都经过求解器的验证，确保其能正确解决其来源任务后，才会被纳入库中。这体现了其“局部验证”的设计原则。\n*   **学习来源**：这些洞察是从解决优化任务的尝试中提取的，其学习数据可以仅来自**答案标签**（即最终的正确数值结果），而无需依赖稀缺且可能有误的“黄金标准程序”或人工标注的推理过程。\n*   **进化机制**：库中的洞察（特别是其“适用条件”）会通过“库进化”阶段不断诊断和 refinement，根据任务与洞察匹配的错位情况，利用聚合证据进行调整，以避免条件过于狭隘或过于泛化，从而提升跨任务的泛化能力。\n\n**总结**：AlphaOPT 的经验库并非存储简单的代码片段或问题-答案对，而是存储由**分类、条件、解释和示例**构成的、经过求解器验证的、结构化的建模规则知识单元。这种设计旨在捕获“何时以及为何应用何种建模方法”的关键知识，并通过持续的自我改进循环来优化其适用性和泛化能力。",
+      "llm_accuracy": 1.0,
+      "retrieved_docs": [
+        {
+          "content": "[ABSTRACT]\n\nOptimization modeling enables critical decisions across industries but remains hard to automate: informal language must be mapped to precise mathematical formulations and executable solver code, while prior LLM approaches either rely on brittle prompting or costly retraining with limited generalization. We present **AlphaOPT** , a self-improving _experience library_ that enables an LLM to learn from limited demonstrations (i.e, even answers alone without gold-standard program) and solver feedback without annotated reasoning traces or parameter updates. AlphaOPT operates a continual two-phase cycle: (i) a _Library Learning_ phase that reflects on failed attempts, extracts solver-verified, structured insights as _{taxonomy, condition, explanation, example}_ ; and (ii) a _Library Evolution_ phase that diagnoses retrieval misalignments and refines the applicability conditions of stored insights, improving transfer across tasks. This design (1) learns efficiently from limited demonstrations without curated rationales, (2) expands continually without costly retraining by updating the library rather than model weights, and (3) makes knowledge explicit and interpretable for human inspection and intervention. Experiments show that AlphaOPT steadily improves with more data (65% _→_ 72% from 100 to 300 training items) and surpasses the strongest baseline by 7.7% on the out-of-distribution OptiBench dataset when trained only on answers. AlphaOPT code and data are available at https://github.com/Minw913/AlphaOPT.",
+          "score": 0.69318914,
+          "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+          "breadcrumbs": [
+            "ABSTRACT"
+          ],
+          "metadata": {
+            "breadcrumbs": [
+              "ABSTRACT"
+            ],
+            "title": "",
+            "section": "ABSTRACT",
+            "subsection": "",
+            "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+            "page": null,
+            "chunk_type": "section",
+            "length": 1525,
+            "has_prefix": true
+          },
+          "recall_method": "fused",
+          "fusion_score": 0.016129032258064516,
+          "rerank_score": 0.9789886190438886
+        },
+        {
+          "content": "[3 METHODOLOGY]\n\nOptimization tasks arrive with diverse natural-language descriptions, yet they share recurring modeling rules that activate under identifiable conditions. We identify three major challenges in building reliable systems that leverage LLMs to formulate and solve optimization problems using existing technologies and resources. First, gold-standard programs are scarce and may contain annotation errors (Jiang et al., 2025; Yang et al., 2025a), while datasets with only answer labels remain underutilized (Huang et al., 2024; 2025; Lu et al., 2025). Second, fine-tuned models (Huang et al., 2025; Jiang et al., 2025) struggle to generalize because the crucial when-to-apply-what knowledge is weakly represented (or missing) in training data; they can mimic syntax without mastering applicability. Third, the performance of prompt-based agent systems AhmadiTeshnizi et al. (2023); Xiao et al. (2023); Yang et al. (2025a) stagnates as the number of exemplars increases: they rely on human empirical curation and lack the capacity to adapt or to continually learn from larger datasets.  \nWe propose AlphaOPT, an experience-library learning framework that learns from both gold programs (when available) and answer-only supervision. AlphaOPT iteratively builds a structured, solver-verified repository of reusable insights with explicit applicability conditions and evolves these conditions at the population level to improve generalization while avoiding redundancy. This twostage design is described in Section 3.1. In Section 3.2, we provide a mathematical interpretation that frames library construction as maximizing task success with a size regularizer. In Section A, we compare our method with prior works on learning from experience and self-evolving problemsolving agents.",
+          "score": 0.6598568,
+          "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+          "breadcrumbs": [
+            "3 METHODOLOGY"
+          ],
+          "metadata": {
+            "breadcrumbs": [
+              "3 METHODOLOGY"
+            ],
+            "title": "",
+            "section": "3 METHODOLOGY",
+            "subsection": "",
+            "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+            "page": null,
+            "chunk_type": "section",
+            "length": 1775,
+            "has_prefix": true
+          },
+          "recall_method": "fused",
+          "fusion_score": 0.015625,
+          "rerank_score": 0.9431233907242187
+        },
+        {
+          "content": "[1 INTRODUCTION]\n\nOptimization models support critical decision-making in finance, manufacturing, marketing, transportation, and logistics (AhmadiTeshnizi et al., 2023; Bertsimas & Tsitsiklis, 1997; Ramamonjison et al., 2022). Beyond improving efficiency, automating the optimization workflow lowers the barrier to operations research expertise in industry, enabling non-experts to prototype faster, iterate on formulations, and deploy solver-backed decisions at scale. Yet this process has long been challenging, as informal and often ambiguous specifications must be mapped to precise, domain-specific formulations and paired with appropriate code and solvers, creating major bottlenecks for end-to-end automation (Jiang et al., 2025).  \nAdvances in large language models (LLMs) make this vision increasingly feasible: they can parse natural language requirements (Ouyang et al., 2022), generate executable programs (Nijkamp et al.; Jimenez et al., 2024), and orchestrate downstream tools (Qin et al., 2024). Two main lines of work  \n> _∗_ Equal contribution.  \n> _†_ Correspondence: qua@mit.edu  \n1  \nPreprint  \nhave emerged. Prompt-based systems steer general LLMs with structured prompts and tool use (Xiao et al., 2023; Thind et al., 2025; AhmadiTeshnizi et al., 2024; Zhang & Luo, 2025). Finetuning approaches adapt models on domain corpora and benchmarks (Huang et al., 2025; Yang et al., 2024). Despite this progress, both families face limitations: prompt-based systems stop improving once they run out of fixed templates, and they are fragile to small wording changes and shifts in the domain; fine-tuned models require costly retraining and, critically, most benchmarks and datasets in the community (e.g., NLP4LP (AhmadiTeshnizi et al., 2024), MAMO (Huang et al., 2024), IndustryOR (Huang et al., 2025)) contain only programs/solutions rather than the intermediate reasoning that governs modeling choices, thereby limiting the generalizability of fine-tuning approaches. This motivates a new learning paradigm for optimization formulation: instead of relying solely on prompts or retraining, LLMs should continually improve by accumulating, refining, and reusing solver-verified modeling insights.  \n![](data/images/AlphaOPT_Formulating_Optimization_Programs_with_Self-Improving_LLM_Experience_Library.pdf-0002-02.png)  \nFigure 1: AlphaOPT identifies and retrieves relevant insights to guide problem solving. In this example, it avoids the common mistake of minimizing the sum of process times and instead introduces an auxiliary variable to correctly minimize the makespan, leading to the correct solution.  \nWe propose **AlphaOPT** , a self-improving framework that builds and refines a structured library of solver-verified insights for optimization formulation, as exemplified in Figure 1. Each insight encodes a reusable modeling rule in the form of a 4-tuple ( _taxonomy_ , _(applicability) condition_ , _explanation_ , _example_ ), which specifies not only what to reuse but also when and why it applies. We remark that our library learning framework does not require backpropagation to update framework parameters and can be regarded as the evolutionary mechanism. **AlphaOPT** improves through a continual two-phase cycle. Library Learning acquires new insights from both gold programs (when available) and solver-verified answer-only supervision, organizing them into a dynamically updating hierarchical taxonomy. Library Evolution then diagnoses misalignments between tasks and insight applicability, and refines conditions using aggregate evidence, ensuring that insights remain neither too narrow nor overly general. This design yields a principled optimization view: library construction corresponds to maximizing expected task success induced by task–insight matching while regularizing size to maintain efficiency and prevent redundancy.  \nWe conduct quantitative experiments across multiple benchmarks and baselines, as well as qualitative analyses of the learned library. The results show that, compared to prompt-based or fine-tuning approaches, **AlphaOPT** (1) learns efficiently from limited demonstrations (i.e., it can learn from answers without recalling formulation) without requiring annotated reasoning traces or even goldstandard programs, (2) achieves stronger out-of-distribution generalizability and more consistent continual growth than learning-based methods, and (3) makes knowledge explicit and interpretable for human inspection and involvement.  \nBeyond these advantages, **AlphaOPT** also achieves state-of-the-art performance on multiple benchmarks. These results demonstrate the efficacy and potential of self-improving experience-library  \n2  \nPreprint  \nlearning for optimization formulation, paving the way toward more challenging settings, such as efficient program formulation and large-scale optimization.  \nOur main contributions are threefold:  \n- **A library learning framework that learns from answers only.** We propose the first experience-library learning framework for natural language optimization formulation tasks, formally grounded in a mathematical view. The system can learn solely from answers, without requiring gold-standard programs.  \n- **A reusable and interpretable experience library.** We construct the first solver-verified library of structured modeling insights for LLM systems, designed to be reusable across tasks and explicitly interpretable for reliable transfer in operations research domains.  \n- **State-of-the-art out-of-distribution generalization.** AlphaOPT achieves strong generalization beyond training distributions, attaining state-of-the-art performance on LogiOR and OptiBench benchmarks.",
+          "score": 0.6270151,
+          "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+          "breadcrumbs": [
+            "1 INTRODUCTION"
+          ],
+          "metadata": {
+            "breadcrumbs": [
+              "1 INTRODUCTION"
+            ],
+            "title": "",
+            "section": "1 INTRODUCTION",
+            "subsection": "",
+            "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+            "page": null,
+            "chunk_type": "section",
+            "length": 5673,
+            "has_prefix": true
+          },
+          "recall_method": "fused",
+          "fusion_score": 0.014492753623188406,
+          "rerank_score": 0.9239872731865938
+        }
+      ]
+    },
+    {
+      "query_id": "Q8",
+      "query": "AlphaOPT 与其他方法相比有哪些优势？",
+      "llm_answer": "根据文档内容，AlphaOPT 与其他方法（主要包括基于提示的方法和基于微调的方法）相比，具有以下显著优势：\n\n### 1. **能够仅从答案中学习，无需黄金标准程序或详细标注**\n   - **关键描述**：AlphaOPT 可以“learn solely from answers”、“learn from answer labels only”或“learn from limited demonstrations (i.e, even answers alone without gold-standard program)”。\n   - **对比**：基于微调的方法通常需要“detailed annotations of mathematical formulations and code”或“gold-standard programs”才能达到高性能，而基于提示的方法则依赖于固定的模板。\n   - **实验证据**：在移除包含黄金标准程序的数据集后，AlphaOPT 仅通过答案标签进行自我探索，达到了与使用黄金标准程序训练时相当的准确率（见表2最后两行）。\n\n### 2. **具有更强的分布外泛化能力**\n   - **关键描述**：AlphaOPT “achieves much stronger out-of-distribution generalization than fine-tuning–based methods” 并 “surpasses the strongest baseline by 7.7% on the out-of-distribution OptiBench dataset”。\n   - **对比**：基于微调的模型（如ORLM、LLMOPT）在训练分布内表现良好，但在未见过的数据集上性能显著下降（例如，ORLM在LogiOR上降至19.6%）。\n   - **实验证据**：AlphaOPT 在分布外数据集（LogiOR、OptiBench、OptMath）上保持了更高的准确率，在OptiBench上达到92.1%的准确率（见图5和4.3节）。\n\n### 3. **通过持续自我改进的经验库学习，无需昂贵重训练**\n   - **关键描述**：AlphaOPT 采用“self-improving experience library”框架，通过“continual two-phase cycle”（库学习和库进化）进行更新，而“does not require backpropagation to update framework parameters”。\n   - **对比**：基于微调的方法需要“costly retraining”和模型参数更新；基于提示的方法则“stop improving once they run out of fixed templates”。\n   - **机制优势**：AlphaOPT 通过更新经验库而非模型权重来持续扩展知识，实现了“expands continually without costly retraining”。\n\n### 4. **提供可解释、可审计的结构化知识，支持人工干预**\n   - **关键描述**：AlphaOPT 构建了“reusable and interpretable experience library”，其中每个洞察都以四元组（分类、条件、解释、示例）形式编码，使知识“explicit and interpretable for human inspection and intervention”。\n   - **对比**：传统微调或提示方法通常作为黑箱运行，缺乏透明度和可解释性。\n   - **价值**：这种设计有助于揭示LLM的典型失败模式，支持人类在实际应用中进行检查和干预。\n\n### 5. **学习效率高，性能随数据增加持续提升**\n   - **关键描述**：AlphaOPT “learns efficiently from limited demonstrations” 并且 “steadily improves with more data”。\n   - **实验证据**：训练数据从100项增加到300项时，性能从65%提升至72%（见摘要部分）。\n\n### 6. **在多个基准测试中达到最先进的性能**\n   - **关键描述**：AlphaOPT “achieves state-of-the-art performance on multiple benchmarks” 并 “outperforms all prompt-based methods on test splits”。\n   - **具体表现**：在OOD OptiBench数据集上取得了最佳性能（92.1%准确率）。\n\n### 总结\nAlphaOPT 的核心优势在于其**创新的自改进经验库学习框架**，它结合了仅从答案学习的灵活性、强大的分布外泛化能力、无需重训练的持续进化机制，以及可解释的结构化知识表示。这些优势使其在优化建模自动化任务中，相比传统的基于提示或微调的方法，提供了更高效、更稳健且更透明的解决方案。\n\n> 以上所有优势均基于文档中[ABSTRACT]、[1 INTRODUCTION]、[4.2 OUT-OF-DISTRIBUTION GENERALIZATION]、[4.3 LEARNING WITH LIMITED SUPERVISION]和[7 CONCLUSION AND DISCUSSION]等章节的明确描述。",
+      "llm_accuracy": 1.0,
+      "retrieved_docs": [
+        {
+          "content": "[4.3 LEARNING WITH LIMITED SUPERVISION]\n\nIn practical OR applications, gold-standard programs are rarely available. We therefore test whether AlphaOPT can learn solely from answers. Since two datasets in our training set contain goldstandard programs, we remove them in this experiment and let **AlphaOPT** learn exclusively from answer labels through self-exploration, as introduced in Section 3.1.1. As shown in the last two rows of Table 2, remarkably, when trained with answer-only supervision, **AlphaOPT** achieves accuracy comparable to when it is trained with gold-standard programs. **AlphaOPT** (self-exploration) outperforms all prompt-based methods on test splits of the training data and even achieves the best performance on the OOD OptiBench dataset (92.1% accuracy). This demonstrates another advantage of **AlphaOPT** over fine-tuning–based methods, which require detailed annotations of mathematical formulations and code in order to achieve strong performance.",
+          "score": 0.66601723,
+          "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+          "breadcrumbs": [
+            "4.3 LEARNING WITH LIMITED SUPERVISION"
+          ],
+          "metadata": {
+            "breadcrumbs": [
+              "4.3 LEARNING WITH LIMITED SUPERVISION"
+            ],
+            "title": "",
+            "section": "4.3 LEARNING WITH LIMITED SUPERVISION",
+            "subsection": "",
+            "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+            "page": null,
+            "chunk_type": "section",
+            "length": 938,
+            "has_prefix": true
+          },
+          "recall_method": "fused",
+          "fusion_score": 0.016129032258064516,
+          "rerank_score": 0.9699928692739357
+        },
+        {
+          "content": "[ABSTRACT]\n\nOptimization modeling enables critical decisions across industries but remains hard to automate: informal language must be mapped to precise mathematical formulations and executable solver code, while prior LLM approaches either rely on brittle prompting or costly retraining with limited generalization. We present **AlphaOPT** , a self-improving _experience library_ that enables an LLM to learn from limited demonstrations (i.e, even answers alone without gold-standard program) and solver feedback without annotated reasoning traces or parameter updates. AlphaOPT operates a continual two-phase cycle: (i) a _Library Learning_ phase that reflects on failed attempts, extracts solver-verified, structured insights as _{taxonomy, condition, explanation, example}_ ; and (ii) a _Library Evolution_ phase that diagnoses retrieval misalignments and refines the applicability conditions of stored insights, improving transfer across tasks. This design (1) learns efficiently from limited demonstrations without curated rationales, (2) expands continually without costly retraining by updating the library rather than model weights, and (3) makes knowledge explicit and interpretable for human inspection and intervention. Experiments show that AlphaOPT steadily improves with more data (65% _→_ 72% from 100 to 300 training items) and surpasses the strongest baseline by 7.7% on the out-of-distribution OptiBench dataset when trained only on answers. AlphaOPT code and data are available at https://github.com/Minw913/AlphaOPT.",
+          "score": 0.6580963,
+          "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+          "breadcrumbs": [
+            "ABSTRACT"
+          ],
+          "metadata": {
+            "breadcrumbs": [
+              "ABSTRACT"
+            ],
+            "title": "",
+            "section": "ABSTRACT",
+            "subsection": "",
+            "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+            "page": null,
+            "chunk_type": "section",
+            "length": 1525,
+            "has_prefix": true
+          },
+          "recall_method": "fused",
+          "fusion_score": 0.015384615384615385,
+          "rerank_score": 0.9398336199350104
+        },
+        {
+          "content": "[7 CONCLUSION AND DISCUSSION]\n\nThis paper addresses the limitations of previous methods by presenting a novel self-improving library learning framework, **AlphaOPT** , for formulating optimization programs. **AlphaOPT** can learn from answer labels only, achieves much stronger out-of-distribution generalization than finetuning–based methods, and provides interpretable and auditable structured knowledge to support human involvement in real-world practice. The learned experience library reveals LLMs’ characteristic failure patterns and underlying causes across domain-specific modeling, mathematical formulation, and solver syntax handling. Case study results show that insights with high success rate primarily address fundamental modeling errors with clear structures, while insights with high mismatch rate or low effectiveness expose the overgeneralization of structurally complex knowledge and highlight the need further to improve the pedagogical clarity and applicability conditions of insights.  \nLooking ahead, we highlight three promising directions. First, reasoning-oriented test-time scaling, which is already powerful in other domains, could be particularly effective for OR formulations, where results are inherently verifiable. Second, strengthening datasets with both academic research and large-scale real-world industry problems will move LLM systems beyond the toy examples that dominate current benchmarks, enabling progress toward truly large-scale optimization tasks. Third, moving beyond correctness toward improving the efficiency of formulations is crucial for real-world deployment, and our self-improving library learning approach offers a promising path toward that goal.",
+          "score": 0.6365111,
+          "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+          "breadcrumbs": [
+            "7 CONCLUSION AND DISCUSSION"
+          ],
+          "metadata": {
+            "breadcrumbs": [
+              "7 CONCLUSION AND DISCUSSION"
+            ],
+            "title": "",
+            "section": "7 CONCLUSION AND DISCUSSION",
+            "subsection": "",
+            "source": "AlphaOPT Formulating Optimization Programs with Self-Improving LLM Experience Library.md",
+            "page": null,
+            "chunk_type": "section",
+            "length": 1673,
+            "has_prefix": true
+          },
+          "recall_method": "fused",
+          "fusion_score": 0.015151515151515152,
+          "rerank_score": 0.9340566971454236
+        }
+      ]
+    }
+  ],
+  "overall": {
+    "total_llm_accuracy": 1.0
+  }
+}

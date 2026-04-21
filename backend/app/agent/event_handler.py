@@ -6,7 +6,7 @@ import json
 import asyncio
 from typing import Callable, Awaitable, List, Dict, Any
 
-from agent.models import ToolCall
+from .models import ToolCall
 
 
 class EventHandler:

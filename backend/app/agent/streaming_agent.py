@@ -10,10 +10,11 @@ from typing import Callable, Awaitable, Optional
 from anthropic import Anthropic
 from dotenv import load_dotenv
 
-from agent.models import LLMResponse, ToolCall
-from agent.context import Context
-from agent.message_builder import MessageBuilder
-from agent.event_handler import EventHandler
+from .models import LLMResponse, ToolCall
+from .context import Context
+from .message_builder import MessageBuilder
+from .event_handler import EventHandler
+from .memory import MemoryManager
 
 load_dotenv(override=True)
 
@@ -47,6 +48,9 @@ class StreamingAgent:
         # 工具系统（外部注入）
         self.tool_registry = None
         self.skill_loader = None
+        
+        # 初始化记忆管理器
+        self.memory_manager = MemoryManager(session_id=session_id, context=self.context)
     
     def set_tool_registry(self, registry):
         """设置工具注册中心"""
@@ -68,10 +72,14 @@ class StreamingAgent:
                 tools_list.append(f"- {tool.name}: {tool.description}")
             tools_desc = "\n".join(tools_list)
         
+        # 获取记忆上下文
+        memory_context = self.memory_manager.get_topic_summaries_for_prompt(limit=3)
+        
         return self.message_builder.build_system_prompt(
             workdir=str(self.workdir),
             skills_description=skills_desc,
-            tools_description=tools_desc
+            tools_description=tools_desc,
+            memory_context=memory_context
         )
     
     def _get_tools_schemas(self) -> list:
@@ -120,6 +128,7 @@ class StreamingAgent:
         
         # 1. 添加用户消息
         self.context.add_user_message(user_message)
+        await self.memory_manager.record_user_message(user_message)
         
         # 2. 开始处理
         await send_callback({"type": "start"})
@@ -133,11 +142,15 @@ class StreamingAgent:
             if not response.has_tool_calls:
                 # 无工具：添加助手消息，结束
                 self.context.add_assistant_message(response.content)
+                await self.memory_manager.record_assistant_message(response.content)
                 await send_callback({"type": "done"})
                 return
             
             # 有工具：添加助手消息（包含工具调用）
             self.context.add_assistant_message(response.content, response.tool_calls)
+            await self.memory_manager.record_assistant_message(response.content, [
+                {"name": tc.name, "input": tc.input} for tc in response.tool_calls
+            ])
             
             # 执行工具
             for tool_call in response.tool_calls:
@@ -145,6 +158,7 @@ class StreamingAgent:
                 
                 # 添加工具结果
                 self.context.add_tool_result(tool_call.id, result)
+                await self.memory_manager.record_tool_result(tool_call.name, tool_call.input, result)
                 
                 # 发送工具结果到前端
                 await send_callback({
